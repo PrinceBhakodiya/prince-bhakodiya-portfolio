@@ -8,7 +8,7 @@ import { siteConfig } from "@/data/site";
 import { scrollToId } from "@/lib/scroll";
 import { Dock } from "./dock";
 import { ease } from "./reveal";
-import { useClock } from "@/lib/use-client";
+import { useClock, useMediaQuery } from "@/lib/use-client";
 
 function formatLocalTime() {
   return new Intl.DateTimeFormat("en-IN", {
@@ -33,35 +33,95 @@ const scatter = (i: number, salt: number) => {
   return Math.round((x - Math.floor(x)) * 100) / 100;
 };
 
+// Drop timing (seconds). Letters land in a scattered order rather than left to right.
+const FALL = 1.15;
+const IMPACT = 0.52; // fraction of FALL at which a letter first hits the baseline
+const dropDelay = (i: number, salt: number) => 0.25 + salt * 0.35 + scatter(i, salt * 10) * 0.85;
+const LAST_LANDING = 0.25 + 0.35 + 0.85 + FALL * IMPACT;
+
+/** Little dust puff where a letter hits the baseline. */
+function Dust({ delay }: { delay: number }) {
+  return (
+    <span className="pointer-events-none absolute inset-x-0 bottom-[0.06em] flex justify-center" aria-hidden>
+      {[-1, -0.4, 0.4, 1].map((dir) => (
+        <motion.span
+          key={dir}
+          className="absolute h-[0.05em] w-[0.05em] rounded-full bg-violet-soft/80"
+          initial={{ opacity: 0, x: 0, y: 0, scale: 0.4 }}
+          animate={{
+            opacity: [0, 0.9, 0],
+            x: ["0em", `${dir * 0.35}em`],
+            y: ["0em", "-0.12em", "-0.02em"],
+            scale: [0.4, 1, 0.6],
+          }}
+          transition={{ duration: 0.6, delay, ease: "easeOut" }}
+        />
+      ))}
+    </span>
+  );
+}
+
 /**
- * Letters fall from above the viewport, tumbling, and land on a soft spring
- * with a little bounce. Only transform and opacity animate, so it stays on the GPU.
+ * Each letter drops from the top edge of the page with gravity: it accelerates,
+ * squashes on impact, bounces twice and settles. Nothing fades or blurs; the
+ * letters are solid the whole way down. Once landed they can be grabbed and
+ * flung (desktop), and they spring back home.
  */
-function FallingWord({ text, delay, reduced }: { text: string; delay: number; reduced: boolean }) {
+function FallingWord({
+  text,
+  salt,
+  reduced,
+  draggable,
+}: {
+  text: string;
+  salt: number;
+  reduced: boolean;
+  draggable: boolean;
+}) {
   return (
     <span className="inline-flex whitespace-nowrap" aria-hidden>
       {text.split("").map((char, i) => {
-        const r = scatter(i, delay * 10);
+        const delay = dropDelay(i, salt);
+        const r = scatter(i, salt * 7 + 3);
         return (
-          <motion.span
-            key={i}
-            className="inline-block will-change-transform"
-            initial={reduced ? false : { y: "-140%", rotate: (r - 0.5) * 70, opacity: 0 }}
-            animate={{ y: "0%", rotate: 0, opacity: 1 }}
-            transition={{
-              y: { type: "spring", stiffness: 140, damping: 13, mass: 0.9, delay: delay + i * 0.06 + r * 0.08 },
-              rotate: { type: "spring", stiffness: 120, damping: 11, delay: delay + i * 0.06 + r * 0.08 },
-              opacity: { duration: 0.25, delay: delay + i * 0.06 + r * 0.08 },
-            }}
-            whileHover={{
-              y: "-10%",
-              rotate: (r - 0.5) * 12,
-              color: "#a78bfa",
-              transition: { type: "spring", stiffness: 400, damping: 15 },
-            }}
-          >
-            {char}
-          </motion.span>
+          <span key={i} className="relative inline-block">
+            {/* Fall: transform only, origin at the feet so the squash looks grounded */}
+            <motion.span
+              className="inline-block origin-bottom will-change-transform"
+              initial={reduced ? false : { y: "-120vh", scaleY: 1.18, scaleX: 0.9 }}
+              animate={{
+                y: ["-120vh", "0vh", "-5vh", "0vh", "-1.2vh", "0vh"],
+                scaleY: [1.18, 1.18, 0.74, 1.06, 0.94, 1],
+                scaleX: [0.9, 0.9, 1.2, 0.97, 1.03, 1],
+              }}
+              transition={{
+                duration: FALL,
+                delay,
+                times: [0, IMPACT, 0.7, 0.84, 0.92, 1],
+                ease: ["easeIn", "easeOut", "easeIn", "easeOut", "easeIn"],
+              }}
+            >
+              {/* Interaction layer, separate from the fall so units never fight */}
+              <motion.span
+                className={draggable ? "inline-block cursor-grab active:cursor-grabbing" : "inline-block"}
+                data-cursor={draggable ? "Drag" : undefined}
+                drag={draggable}
+                dragSnapToOrigin
+                dragElastic={0.55}
+                dragTransition={{ bounceStiffness: 260, bounceDamping: 12 }}
+                whileDrag={{ scale: 1.12, rotate: (r - 0.5) * 30, color: "#a78bfa", zIndex: 30 }}
+                whileHover={{
+                  y: -14,
+                  rotate: (r - 0.5) * 10,
+                  color: "#a78bfa",
+                  transition: { type: "spring", stiffness: 420, damping: 14 },
+                }}
+              >
+                {char}
+              </motion.span>
+            </motion.span>
+            {!reduced && <Dust delay={delay + FALL * IMPACT - 0.02} />}
+          </span>
         );
       })}
     </span>
@@ -117,6 +177,7 @@ export function Hero() {
   const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.4]);
   const photoY = useTransform(scrollYProgress, [0, 1], [0, 60]);
   const reduced = useReducedMotion() ?? false;
+  const canDrag = useMediaQuery("(pointer: fine)");
   const [portrait, setPortrait] = useState(false);
   const portraitRef = useRef<HTMLImageElement>(null);
 
@@ -181,7 +242,7 @@ export function Hero() {
             <motion.div
               initial={reduced ? false : { opacity: 0, y: 60, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 60, damping: 16, delay: 0.9 }}
+              transition={{ type: "spring", stiffness: 60, damping: 16, delay: LAST_LANDING }}
               className="relative h-[118%] w-[62%] max-w-[520px] sm:w-[44%] lg:w-[30%]"
               style={{ aspectRatio: "4 / 5" }}
             >
@@ -201,12 +262,41 @@ export function Hero() {
 
           <motion.h1
             style={{ y: nameY }}
+            // A small jolt when the last letter hits the floor
+            animate={reduced ? undefined : { x: [0, -7, 6, -3, 2, 0] }}
+            transition={{ duration: 0.45, delay: LAST_LANDING, ease: "easeOut" }}
             className="display relative flex flex-col items-center text-center text-[18.5vw] text-[#f3f2f5] lg:flex-row lg:justify-center lg:gap-[0.22em] lg:text-[10.6vw] 2xl:text-[156px]"
           >
             <span className="sr-only">{siteConfig.name}</span>
-            <FallingWord text="Prince" delay={0.15} reduced={reduced} />
-            <FallingWord text="Bhakodiya" delay={0.5} reduced={reduced} />
+            <FallingWord text="Prince" salt={0} reduced={reduced} draggable={canDrag} />
+            <FallingWord text="Bhakodiya" salt={1} reduced={reduced} draggable={canDrag} />
           </motion.h1>
+
+          {/* The floor the letters land on: lights up under the impacts, then rests */}
+          <motion.div
+            aria-hidden
+            className="relative mx-auto mt-1 h-px w-full max-w-[1100px] origin-center bg-gradient-to-r from-transparent via-violet-soft to-transparent"
+            initial={reduced ? false : { scaleX: 0.2, opacity: 0 }}
+            animate={{ scaleX: [0.2, 1, 1], opacity: [0, 1, 0.35] }}
+            transition={{ duration: 1.6, delay: 0.75, times: [0, 0.5, 1], ease: "easeOut" }}
+          />
+
+          {/* Hand-written hint, desktop only */}
+          {canDrag && !reduced && (
+            <motion.p
+              aria-hidden
+              initial={{ opacity: 0, y: 8, rotate: -6 }}
+              animate={{ opacity: 1, y: 0, rotate: -6 }}
+              transition={{ duration: 0.6, delay: LAST_LANDING + 0.6, ease }}
+              className="serif-accent pointer-events-none absolute -bottom-12 right-[6%] hidden items-center gap-2 text-2xl lg:flex"
+            >
+              <svg width="44" height="28" viewBox="0 0 44 28" fill="none" className="-scale-x-100 rotate-[200deg]">
+                <path d="M2 4c10 2 22 8 30 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                <path d="M26 22l6 3 1-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              psst — throw the letters around
+            </motion.p>
+          )}
         </div>
 
         {/* Intro + currently */}
@@ -214,7 +304,7 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7, ease }}
+            transition={{ duration: 0.8, delay: LAST_LANDING - 0.2, ease }}
             className="max-w-3xl text-xl leading-[1.55] text-muted sm:text-2xl lg:text-[27px]"
           >
             Full Stack Developer and <span className="text-foreground">Tech Lead</span>. I design, build and ship
@@ -226,7 +316,7 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.85, ease }}
+            transition={{ duration: 0.8, delay: LAST_LANDING - 0.05, ease }}
             className="flex flex-col justify-between gap-8"
           >
             <Currently />
@@ -250,7 +340,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 1.05, ease }}
+          transition={{ duration: 0.9, delay: LAST_LANDING + 0.15, ease }}
           className="mt-16"
         >
           <Dock />
