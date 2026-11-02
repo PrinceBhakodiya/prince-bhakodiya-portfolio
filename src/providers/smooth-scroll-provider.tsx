@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
+import { cancelFrame, frame } from "framer-motion";
 import { setLenis } from "@/lib/scroll";
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
@@ -16,15 +17,15 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     });
     setLenis(lenis);
 
-    let frame = 0;
-    function raf(time: number) {
-      lenis.raf(time);
-      frame = requestAnimationFrame(raf);
+    // Drive Lenis from framer-motion's frame loop so scroll position and
+    // scroll-linked animations update in the same frame (no parallax judder)
+    function update({ timestamp }: { timestamp: number }) {
+      lenis.raf(timestamp);
     }
-    frame = requestAnimationFrame(raf);
+    frame.update(update, true);
 
     return () => {
-      cancelAnimationFrame(frame);
+      cancelFrame(update);
       setLenis(null);
       lenis.destroy();
     };

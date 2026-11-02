@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, ArrowDown, ArrowUpRight } from "lucide-react";
 import { siteConfig } from "@/data/site";
 import { scrollToId } from "@/lib/scroll";
@@ -26,23 +26,44 @@ function LocalTime() {
   return <span className="tabular-nums">{time ?? "—"}</span>;
 }
 
-/** Each letter rises in on load and hops when hovered. */
-function Word({ text, delay }: { text: string; delay: number }) {
+// Deterministic per-letter scatter (same on server and client, so no hydration mismatch)
+const scatter = (i: number, salt: number) => {
+  const x = Math.sin((i + 1) * 12.9898 + salt * 78.233) * 43758.5453;
+  // Two decimals: the server and the browser serialise long floats differently
+  return Math.round((x - Math.floor(x)) * 100) / 100;
+};
+
+/**
+ * Letters fall from above the viewport, tumbling, and land on a soft spring
+ * with a little bounce. Only transform and opacity animate, so it stays on the GPU.
+ */
+function FallingWord({ text, delay, reduced }: { text: string; delay: number; reduced: boolean }) {
   return (
-    <span className="inline-flex" aria-hidden>
-      {text.split("").map((char, i) => (
-        <span key={i} className="inline-block overflow-hidden pb-[0.08em]">
+    <span className="inline-flex whitespace-nowrap" aria-hidden>
+      {text.split("").map((char, i) => {
+        const r = scatter(i, delay * 10);
+        return (
           <motion.span
-            className="inline-block"
-            initial={{ y: "105%" }}
-            animate={{ y: 0 }}
-            transition={{ duration: 1, delay: delay + i * 0.035, ease }}
-            whileHover={{ y: "-8%", color: "#a78bfa", transition: { duration: 0.2 } }}
+            key={i}
+            className="inline-block will-change-transform"
+            initial={reduced ? false : { y: "-140%", rotate: (r - 0.5) * 70, opacity: 0 }}
+            animate={{ y: "0%", rotate: 0, opacity: 1 }}
+            transition={{
+              y: { type: "spring", stiffness: 140, damping: 13, mass: 0.9, delay: delay + i * 0.06 + r * 0.08 },
+              rotate: { type: "spring", stiffness: 120, damping: 11, delay: delay + i * 0.06 + r * 0.08 },
+              opacity: { duration: 0.25, delay: delay + i * 0.06 + r * 0.08 },
+            }}
+            whileHover={{
+              y: "-10%",
+              rotate: (r - 0.5) * 12,
+              color: "#a78bfa",
+              transition: { type: "spring", stiffness: 400, damping: 15 },
+            }}
           >
             {char}
           </motion.span>
-        </span>
-      ))}
+        );
+      })}
     </span>
   );
 }
@@ -94,6 +115,8 @@ export function Hero() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const nameY = useTransform(scrollYProgress, [0, 1], [0, 160]);
   const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.4]);
+  const photoY = useTransform(scrollYProgress, [0, 1], [0, 60]);
+  const reduced = useReducedMotion() ?? false;
   const [portrait, setPortrait] = useState(false);
   const portraitRef = useRef<HTMLImageElement>(null);
 
@@ -148,37 +171,41 @@ export function Hero() {
           </motion.p>
         </div>
 
-        {/* Name */}
-        <div className="relative mt-10 sm:mt-6">
-          {/* Optional portrait — drop /public/prince.png (transparent PNG) to show it behind the name */}
-          <div className="pointer-events-none absolute inset-x-0 -top-10 bottom-0 flex justify-center mix-blend-screen">
+        {/* Name, centred, with the portrait standing between the words */}
+        <div className="relative mt-12 sm:mt-10">
+          {/* Portrait: drop a transparent cut-out at /public/prince.png and it appears here */}
+          <motion.div
+            style={{ y: photoY }}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center"
+          >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.2, delay: 0.3, ease }}
-              className="relative h-full w-[46%] max-w-[560px]"
+              initial={reduced ? false : { opacity: 0, y: 60, scale: 0.94 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 60, damping: 16, delay: 0.9 }}
+              className="relative h-[118%] w-[62%] max-w-[520px] sm:w-[44%] lg:w-[30%]"
+              style={{ aspectRatio: "4 / 5" }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- optional file; must fail silently */}
               <img
                 ref={portraitRef}
                 src="/prince.png"
                 alt=""
-                className={`absolute inset-0 h-full w-full object-contain object-bottom transition-opacity duration-700 ${portrait ? "opacity-100" : "opacity-0"}`}
+                className={`absolute inset-0 h-full w-full object-contain object-bottom transition-opacity duration-700 [mask-image:linear-gradient(to_bottom,black_75%,transparent)] ${portrait ? "opacity-100" : "opacity-0"}`}
                 onLoad={() => setPortrait(true)}
               />
-              {!portrait && (
-                <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet/35 blur-[90px] sm:h-96 sm:w-96" />
-              )}
             </motion.div>
-          </div>
+          </motion.div>
+          {!portrait && (
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet/35 blur-[90px] sm:h-96 sm:w-[34rem]" />
+          )}
 
           <motion.h1
             style={{ y: nameY }}
-            className="display relative flex flex-col text-[19vw] text-[#f3f2f5] lg:flex-row lg:justify-between lg:text-[10.4vw] 2xl:text-[150px]"
+            className="display relative flex flex-col items-center text-center text-[18.5vw] text-[#f3f2f5] lg:flex-row lg:justify-center lg:gap-[0.22em] lg:text-[10.6vw] 2xl:text-[156px]"
           >
             <span className="sr-only">{siteConfig.name}</span>
-            <Word text="Prince" delay={0.15} />
-            <Word text="Bhakodiya" delay={0.35} />
+            <FallingWord text="Prince" delay={0.15} reduced={reduced} />
+            <FallingWord text="Bhakodiya" delay={0.5} reduced={reduced} />
           </motion.h1>
         </div>
 
