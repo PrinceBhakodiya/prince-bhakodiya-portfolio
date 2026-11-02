@@ -31,7 +31,13 @@ export type Project = {
   kind: string;
   /** Brand colour for dots, glows and the generated screen */
   color: string;
-  screen: "ride" | "trade" | "ipo" | "shop" | "food" | "crm";
+  screen: "ride" | "trade" | "ipo" | "shop" | "food" | "web";
+  /** A ready-made device mockup image (transparent) shown instead of the generated screen */
+  mockup?: string;
+  /** Show a MacBook browser opened on this web app (see webApps in mockups.tsx) */
+  browser?: "antoc" | "ipobuzz" | "suppr" | "brokersite";
+  /** Phone placed in front of the browser */
+  companion?: "antoc" | "suppr";
   /** Floating detail card next to the device */
   overlay: { label: string; value: string; meta: string };
 };
@@ -164,13 +170,14 @@ export const projects: Project[] = [
   },
   {
     id: "ipohub",
-    icon: "/projects/ipohub.webp",
+    icon: "/projects/ipobuzz-icon.png",
     tagline: "Never miss an IPO.",
-    kind: "Android app",
-    color: "#3b82f6",
+    kind: "Android & iOS",
+    color: "#6d4cff",
     screen: "ipo",
-    overlay: { label: "Subscription", value: "42.6×", meta: "Retail · Day 3" },
-    title: "IPOHub",
+    mockup: "/projects/ipobuzz-phones.webp",
+    overlay: { label: "GMP today", value: "₹58 (+8.4%)", meta: "Paras Healthcare · Day 3" },
+    title: "IPO Buzz",
     subtitle: "All IPO information in one place",
     description:
       "Comprehensive IPO intelligence app — upcoming listings, company profiles, side-by-side comparisons, and real-time news so investors never miss an offering.",
@@ -187,12 +194,41 @@ export const projects: Project[] = [
     tech: ["Flutter", "Node.js", "MongoDB", "FastAPI"],
     gradient: "from-blue-600/30 via-indigo-600/20 to-blue-800/30",
     accent: "blue",
-    image: "/projects/ipohub.webp",
-    imageAlt: "IPOHub app icon — IPO calendar and research",
+    image: "/projects/ipobuzz-icon.png",
+    imageAlt: "IPO Buzz app icon — IPO calendar, GMP and subscription",
     imageFit: "contain",
     links: {
-      playStore:
-        "https://play.google.com/store/apps/details?id=com.ipohub.app&hl=en_IN",
+      playStore: "https://play.google.com/store/apps/details?id=com.ipobuzz.app",
+      appStore: "https://apps.apple.com/in/app/ipo-buzz/id6806936127",
+      website: "https://ipobuzz.in",
+    },
+  },
+  {
+    id: "ipobuzz-web",
+    icon: "/projects/ipobuzz-icon.png",
+    tagline: "Every IPO, live on the web.",
+    kind: "Web platform",
+    color: "#5b45e6",
+    screen: "web",
+    browser: "ipobuzz",
+    overlay: { label: "Today in IPOs", value: "7 live IPOs", meta: "2 closing · 3 allotments today" },
+    title: "IPO Buzz Web",
+    subtitle: "IPO tracking website",
+    description:
+      "The IPO Buzz website at ipobuzz.in — live IPOs, GMP, subscription updates, allotment status and listing dates for Mainboard and SME issues, server-rendered with Next.js for search.",
+    category: "FinTech",
+    platforms: ["Website", "Admin Dashboard", "API Backend"],
+    features: [
+      "Live IPOs with bidding countdown",
+      "Grey market premium (GMP) tracker",
+      "IPO calendar & allotment status",
+      "SEO-first Next.js pages",
+    ],
+    tech: ["Next.js", "Node.js", "MongoDB"],
+    gradient: "from-indigo-600/30 via-violet-600/20 to-indigo-800/30",
+    accent: "violet",
+    links: {
+      website: "https://ipobuzz.in",
     },
   },
   {
@@ -273,12 +309,71 @@ export const projects: Project[] = [
     },
   },
   {
+    id: "suppr",
+    icon: "/projects/suppr-icon.png",
+    tagline: "Once-in-a-lifetime dining at home.",
+    kind: "Web, Android & iOS",
+    color: "#ffd60a",
+    screen: "web",
+    browser: "suppr",
+    companion: "suppr",
+    overlay: { label: "House party", value: "8 seats", meta: "Hosted dinner · Saturday" },
+    title: "Suppr",
+    subtitle: "Home dining marketplace",
+    description:
+      "India-first home dining marketplace — hire a private chef for the table at home or book a seat at a hosted house party. Suppr for guests, Suppr Pro for chefs, with Razorpay payments and payouts.",
+    category: "Marketplace",
+    platforms: ["Guest App", "Suppr Pro App", "Website", "Admin Panel"],
+    features: [
+      "Hire a verified private chef",
+      "Hosted house parties with seats",
+      "Suppr Pro app for chefs",
+      "Razorpay payments & payouts",
+    ],
+    tech: ["Flutter", "React", "Node.js", "MongoDB"],
+    gradient: "from-yellow-500/30 via-amber-500/20 to-yellow-700/30",
+    accent: "yellow",
+    links: {
+      website: "https://thesuppr.in",
+    },
+  },
+  {
+    id: "brokersite",
+    icon: "/projects/brokersite-icon.png",
+    tagline: "A broker website, live in one minute.",
+    kind: "Web platform",
+    color: "#e8875f",
+    screen: "web",
+    browser: "brokersite",
+    overlay: { label: "Just published", value: "3 BHK · ₹85 Lakh", meta: "From a WhatsApp message" },
+    title: "BrokerSite",
+    subtitle: "Websites for Indian brokers",
+    description:
+      "BrokerSite turns the photos and details Indian brokers already send on WhatsApp into a website — property pages, enquiries, reviews and QR codes, with AI-written listings in English, Hindi and Gujarati.",
+    category: "PropTech",
+    platforms: ["Website builder", "WhatsApp bot", "Broker dashboard", "API"],
+    features: [
+      "Property pages from WhatsApp",
+      "AI listings in 3 languages",
+      "Enquiries & lead list",
+      "QR codes & reviews",
+    ],
+    tech: ["Next.js", "Node.js", "MongoDB", "WhatsApp API", "Gemini"],
+    gradient: "from-slate-700/30 via-orange-600/20 to-slate-800/30",
+    accent: "orange",
+    links: {
+      website: "https://brokersite.in",
+    },
+  },
+  {
     id: "antoc",
-    icon: "/projects/antoc-icon.svg",
+    icon: "/projects/antoc-icon.png",
     tagline: "Every lead, one pipeline.",
     kind: "Web, Android & iOS",
     color: "#8b5cf6",
-    screen: "crm",
+    screen: "web",
+    browser: "antoc",
+    companion: "antoc",
     overlay: { label: "Broadcast", value: "2,140 delivered", meta: "WhatsApp · 98% read" },
     title: "Antoc CRM",
     subtitle: "Enterprise sales automation",
@@ -298,9 +393,11 @@ export const projects: Project[] = [
     tech: ["Flutter", "React", "Node.js", "MongoDB"],
     gradient: "from-violet-600/30 via-purple-600/20 to-violet-800/30",
     accent: "violet",
-    image: "/projects/antoc.svg",
+    image: "/projects/antoc-icon.png",
     imageAlt: "Antoc CRM logo — purple brand mark",
     links: {
+      playStore: "https://play.google.com/store/apps/details?id=com.passdn.business",
+      appStore: "https://apps.apple.com/in/app/antoc-crm/id6746353226",
       website: "https://antoc.ai/",
     },
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import {
   motion,
@@ -12,16 +12,125 @@ import {
 } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import { scrollToId } from "@/lib/scroll";
+import { cn } from "@/lib/utils";
 
-const BASE = 64;
-const MAX = 100;
-const RANGE = 170;
+const BASE = 60;
+const MAX = 96;
+const RANGE = 160;
 
-function DockIcon({ project, mouseX }: { project: Project; mouseX: MotionValue<number> }) {
-  const ref = useRef<HTMLButtonElement>(null);
+type DockItem = {
+  id: string;
+  label: string;
+  sub?: string;
+  icon: ReactNode;
+  /** Shown as the "app is running" dot under the icon. */
+  dot?: string;
+  href?: string;
+  onClick?: () => void;
+};
+
+function AppArt({ project }: { project: Project }) {
+  return (
+    <Image
+      src={project.icon}
+      alt=""
+      fill
+      sizes="96px"
+      className="object-cover"
+      unoptimized={project.icon.endsWith(".svg")}
+    />
+  );
+}
+
+function StackFolder() {
+  return (
+    <span className="absolute inset-0 grid grid-cols-2 gap-[9%] bg-white/[0.14] p-[18%] backdrop-blur-xl">
+      {["#61DAFB", "#02569B", "#339933", "#47A248"].map((c) => (
+        <span key={c} className="rounded-[22%]" style={{ background: c }} />
+      ))}
+    </span>
+  );
+}
+
+/** One icon per product: the IPO Buzz website shares the IPO Buzz app icon, so it stays out of the dock. */
+const dockProjects = projects.filter((project) => project.id !== "ipobuzz-web");
+
+const appItems: DockItem[] = dockProjects.map((project) => ({
+  id: project.id,
+  label: project.title.replace(/ Ride| Rides| CRM/g, ""),
+  sub: project.kind,
+  icon: <AppArt project={project} />,
+  dot: project.color,
+  onClick: () => scrollToId(`app-${project.id}`, -96),
+}));
+
+const stackItem: DockItem = {
+  id: "stack",
+  label: "Stack",
+  sub: "Folder",
+  icon: <StackFolder />,
+  onClick: () => scrollToId("stack"),
+};
+
+/** Shared tap/click target: an internal scroll or an external link. */
+function ItemTarget({
+  item,
+  className,
+  style,
+  children,
+  ...rest
+}: {
+  item: DockItem;
+  className?: string;
+  style?: React.ComponentProps<typeof motion.button>["style"];
+  children: ReactNode;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
+}) {
+  const label = item.sub ? `${item.label} — ${item.sub}` : item.label;
+  if (item.href) {
+    return (
+      <motion.a
+        href={item.href}
+        target={item.href.startsWith("http") ? "_blank" : undefined}
+        rel="noopener noreferrer"
+        aria-label={label}
+        whileTap={{ scale: 0.88 }}
+        className={className}
+        style={style}
+        {...rest}
+      >
+        {children}
+      </motion.a>
+    );
+  }
+  return (
+    <motion.button
+      type="button"
+      onClick={item.onClick}
+      aria-label={label}
+      whileTap={{ scale: 0.88 }}
+      className={className}
+      style={style}
+      {...rest}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+const iconShell =
+  "relative block overflow-hidden rounded-[23%] shadow-[0_8px_18px_-8px_rgba(0,0,0,0.85)] ring-1 ring-inset ring-white/15";
+
+/* ───────────────────────── macOS dock (desktop) ───────────────────────── */
+
+function MacDockIcon({ item, mouseX }: { item: DockItem; mouseX: MotionValue<number> }) {
+  const ref = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState(false);
 
-  // macOS magnification: icons grow with proximity to the pointer
+  // Magnification: icons grow with proximity to the pointer
   const distance = useTransform(mouseX, (x) => {
     const rect = ref.current?.getBoundingClientRect();
     if (!rect || x === Infinity) return RANGE;
@@ -29,90 +138,118 @@ function DockIcon({ project, mouseX }: { project: Project; mouseX: MotionValue<n
   });
   const sizeRaw = useTransform(distance, [-RANGE, 0, RANGE], [BASE, MAX, BASE]);
   const size = useSpring(sizeRaw, { mass: 0.1, stiffness: 170, damping: 14 });
-  const lift = useTransform(size, [BASE, MAX], [0, -14]);
 
   return (
-    <div className="relative flex flex-col items-center">
+    <motion.div ref={ref} style={{ width: size }} className="relative flex flex-col items-center">
       <AnimatePresence>
         {hover && (
           <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 4, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="glass pointer-events-none absolute -top-14 z-10 whitespace-nowrap rounded-xl px-3.5 py-2 text-sm"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.12 }}
+            className="pointer-events-none absolute bottom-full z-10 mb-3 whitespace-nowrap rounded-lg border border-white/15 bg-[#26232f]/95 px-3 py-1.5 text-[13px] shadow-xl backdrop-blur-xl"
           >
-            <span className="font-medium">{project.title}</span>
-            <span className="ml-2 text-muted">{project.kind}</span>
+            <span className="font-medium">{item.label}</span>
+            {item.sub && <span className="ml-1.5 text-muted">{item.sub}</span>}
+            <span className="absolute left-1/2 top-full -mt-[5px] h-2.5 w-2.5 -translate-x-1/2 rotate-45 border-b border-r border-white/15 bg-[#26232f]" />
           </motion.div>
         )}
       </AnimatePresence>
-      <motion.button
-        ref={ref}
-        onClick={() => scrollToId(`app-${project.id}`)}
+      <ItemTarget
+        item={item}
         onHoverStart={() => setHover(true)}
         onHoverEnd={() => setHover(false)}
         onFocus={() => setHover(true)}
         onBlur={() => setHover(false)}
-        style={{ width: size, height: size, y: lift }}
-        whileTap={{ scale: 0.9 }}
-        className="relative overflow-hidden rounded-[24%] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)] ring-1 ring-white/15"
-        aria-label={`${project.title} — ${project.kind}`}
+        style={{ width: size, height: size }}
+        className={iconShell}
       >
-        <Image src={project.icon} alt="" fill sizes="100px" className="object-cover" unoptimized={project.icon.endsWith(".svg")} />
-      </motion.button>
-      <span className="mt-2 h-1 w-1 rounded-full" style={{ background: project.color }} />
+        {item.icon}
+      </ItemTarget>
+      <span
+        className="absolute -bottom-[7px] h-1 w-1 rounded-full"
+        style={{ background: item.dot ? "rgba(255,255,255,0.75)" : "transparent" }}
+      />
+    </motion.div>
+  );
+}
+
+function MacDock() {
+  const mouseX = useMotionValue(Infinity);
+  const groups = [appItems, [stackItem]];
+
+  return (
+    <motion.div
+      onMouseMove={(e) => mouseX.set(e.clientX)}
+      onMouseLeave={() => mouseX.set(Infinity)}
+      className="dock-glass hidden h-[84px] items-end gap-2.5 rounded-[26px] px-3 pb-3 lg:flex"
+    >
+      {groups.map((group, g) => (
+        <div key={g} className="contents">
+          {g > 0 && <span className="mx-1 h-[60px] w-px self-end bg-white/20" />}
+          {group.map((item) => (
+            <MacDockIcon key={item.id} item={item} mouseX={mouseX} />
+          ))}
+        </div>
+      ))}
+    </motion.div>
+  );
+}
+
+/* ───────────────────────── iOS home screen (phone / tablet) ───────────────────────── */
+
+function HomeIcon({ item, index }: { item: DockItem; index: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.6 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.03 * index }}
+      className="flex flex-col items-center gap-1.5"
+    >
+      <ItemTarget item={item} className={cn(iconShell, "aspect-square w-full")}>
+        {item.icon}
+      </ItemTarget>
+      <span className="w-full truncate text-center text-[11px] leading-tight text-white/90 [text-shadow:0_1px_4px_rgba(0,0,0,0.6)]">
+        {item.label}
+      </span>
+    </motion.div>
+  );
+}
+
+function HomeScreen() {
+
+  return (
+    <div className="w-full max-w-[400px] lg:hidden">
+      <div className="grid grid-cols-4 gap-x-[6.5%] gap-y-5 px-2">
+        {appItems.map((item, i) => (
+          <HomeIcon key={item.id} item={item} index={i} />
+        ))}
+      </div>
+
+      {/* Page dots */}
+      <div className="mt-6 flex justify-center gap-2">
+        <span className="h-[7px] w-[7px] rounded-full bg-white" />
+        <span className="h-[7px] w-[7px] rounded-full bg-white/30" />
+      </div>
+
+      {/* Dock bar */}
+      <div className="dock-glass mt-4 flex justify-center rounded-[32px] p-[14px]">
+        <ItemTarget item={stackItem} className={cn(iconShell, "aspect-square w-[21%]")}>
+          {stackItem.icon}
+        </ItemTarget>
+      </div>
     </div>
   );
 }
 
 export function Dock() {
-  const mouseX = useMotionValue(Infinity);
-
   return (
     <div className="flex flex-col items-center">
-      <p className="eyebrow mb-5">Now shipping · Pick one</p>
-
-      {/* Desktop dock with magnification */}
-      <motion.div
-        onMouseMove={(e) => mouseX.set(e.clientX)}
-        onMouseLeave={() => mouseX.set(Infinity)}
-        className="glass hidden h-[100px] items-end gap-3 rounded-[28px] px-4 pb-2 md:flex"
-      >
-        {projects.map((project) => (
-          <DockIcon key={project.id} project={project} mouseX={mouseX} />
-        ))}
-        <span className="mx-1 mb-5 h-14 w-px self-end bg-white/15" />
-        <div className="relative flex flex-col items-center">
-          <button
-            onClick={() => scrollToId("stack")}
-            className="grid h-16 w-16 grid-cols-2 gap-1 rounded-[24%] bg-white/[0.06] p-2.5 ring-1 ring-white/15 transition-transform hover:-translate-y-2"
-            aria-label="Tech stack"
-            title="Stack folder"
-          >
-            {["#61DAFB", "#02569B", "#339933", "#47A248"].map((c) => (
-              <span key={c} className="rounded-[5px]" style={{ background: c }} />
-            ))}
-          </button>
-          <span className="mt-2 h-1 w-1" />
-        </div>
-      </motion.div>
-
-      {/* Mobile: swipeable row */}
-      <div className="no-scrollbar -mx-4 flex w-[calc(100%+2rem)] gap-3 overflow-x-auto px-4 pb-2 md:hidden">
-        {projects.map((project) => (
-          <button
-            key={project.id}
-            onClick={() => scrollToId(`app-${project.id}`)}
-            className="flex shrink-0 flex-col items-center gap-2"
-          >
-            <span className="relative h-16 w-16 overflow-hidden rounded-[24%] ring-1 ring-white/15">
-              <Image src={project.icon} alt="" fill sizes="64px" className="object-cover" unoptimized={project.icon.endsWith(".svg")} />
-            </span>
-            <span className="max-w-16 truncate text-[11px] text-muted">{project.title}</span>
-          </button>
-        ))}
-      </div>
+      <p className="eyebrow mb-6">Now shipping · Pick one</p>
+      <MacDock />
+      <HomeScreen />
     </div>
   );
 }
@@ -121,16 +258,16 @@ export function Dock() {
 export function IconStack() {
   return (
     <div className="flex">
-      {projects.map((project, i) => (
+      {dockProjects.map((project, i) => (
         <motion.button
           key={project.id}
-          onClick={() => scrollToId(`app-${project.id}`)}
+          onClick={() => scrollToId(`app-${project.id}`, -96)}
           whileHover={{ y: -10, zIndex: 10, scale: 1.08 }}
           className="relative -ml-3 h-14 w-14 shrink-0 overflow-hidden rounded-[24%] shadow-[0_8px_20px_-6px_rgba(0,0,0,0.9)] ring-2 ring-background first:ml-0 sm:h-16 sm:w-16"
-          style={{ zIndex: projects.length - i }}
+          style={{ zIndex: dockProjects.length - i }}
           aria-label={project.title}
         >
-          <Image src={project.icon} alt="" fill sizes="64px" className="object-cover" unoptimized={project.icon.endsWith(".svg")} />
+          <AppArt project={project} />
         </motion.button>
       ))}
     </div>

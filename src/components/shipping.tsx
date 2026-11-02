@@ -15,7 +15,9 @@ import { siteConfig } from "@/data/site";
 import { scrollToId } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 import { IconStack } from "./dock";
-import { Laptop, Phone } from "./mockups";
+import { AntocPhoneScreen, BrowserLaptop, Phone, PhoneFrame, SupprPhoneScreen } from "./mockups";
+
+const companionScreens = { antoc: AntocPhoneScreen, suppr: SupprPhoneScreen } as const;
 import { Reveal, SectionTitle, ease } from "./reveal";
 import { useClock } from "@/lib/use-client";
 
@@ -112,7 +114,8 @@ function ShowcaseCard({
   // Cards underneath shrink slightly as the next one slides over them
   const scale = useTransform(progress, [index / total, 1], [1, 1 - (total - index) * 0.025]);
   const primary = primaryLink(project);
-  const isWeb = project.screen === "crm";
+  const isWeb = !!project.browser;
+  const Companion = project.companion ? companionScreens[project.companion] : null;
   const secondary = [
     project.links?.appStore && primary?.href !== project.links.appStore && { href: project.links.appStore, label: "App Store", icon: Apple },
     project.links?.playStoreDriver && { href: project.links.playStoreDriver, label: "Driver app", icon: Play },
@@ -121,7 +124,10 @@ function ShowcaseCard({
   const host = hostOf(project.links?.website);
 
   return (
-    <div id={`app-${project.id}`} className="lg:sticky lg:top-24" style={{ scrollMarginTop: 96 }}>
+    <>
+    {/* Jump target: sticky cards report their stuck position, so links aim at this static marker instead */}
+    <div id={`app-${project.id}`} aria-hidden className="-mb-6 h-0 lg:-mb-10" />
+    <div className="lg:sticky lg:top-24">
       <motion.article
         style={{ scale, transformOrigin: "top center" }}
         className="relative overflow-hidden rounded-[32px] border border-line bg-[#121119] lg:h-[calc(100vh-120px)] lg:max-h-[860px] lg:min-h-[640px] lg:rounded-[44px]"
@@ -195,29 +201,63 @@ function ShowcaseCard({
           </div>
 
           {/* Device */}
-          <a
-            href={primary?.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor={primary ? "Open app" : undefined}
-            className="relative flex min-h-[420px] items-center justify-center lg:h-full"
-            aria-label={`Open ${project.title}`}
-          >
-            {isWeb ? (
-              <Laptop project={project} className="w-full max-w-[680px]" />
+          <div className="relative flex min-h-[420px] items-center justify-center lg:h-full">
+            {project.browser ? (
+              <div className={cn("relative w-full max-w-[680px]", Companion && "pb-[8%] pr-[6%]")}>
+                <BrowserLaptop initial={project.browser} className="w-full" />
+                {Companion && (
+                  <motion.a
+                    href={primary?.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-cursor="Get the app"
+                    aria-label={`Get ${project.title} on mobile`}
+                    initial={{ y: 60, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1, rotate: 4 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 1, delay: 0.2, ease }}
+                    className="absolute bottom-0 right-0 w-[25%]"
+                  >
+                    <PhoneFrame>
+                      <Companion />
+                    </PhoneFrame>
+                  </motion.a>
+                )}
+              </div>
             ) : (
-              <motion.div
-                initial={{ y: 40, rotate: 0 }}
-                whileInView={{ y: 0, rotate: -3 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 1, ease }}
-                className="w-[58%] max-w-[300px] lg:w-[48%]"
+              <a
+                href={primary?.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor={primary ? "Open app" : undefined}
+                aria-label={`Open ${project.title}`}
+                className={cn("flex justify-center", project.mockup ? "w-full" : "w-[58%] max-w-[300px] lg:w-[48%]")}
               >
-                <Phone project={project} />
-              </motion.div>
+                <motion.div
+                  initial={{ y: 40, rotate: 0 }}
+                  whileInView={{ y: 0, rotate: project.mockup ? 0 : -3 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 1, ease }}
+                  className={project.mockup ? "w-full max-w-[540px]" : "w-full"}
+                >
+                  {project.mockup ? (
+                    <Image
+                      src={project.mockup}
+                      alt={`${project.title} app screens`}
+                      width={1326}
+                      height={1466}
+                      sizes="(min-width: 1024px) 540px, 90vw"
+                      className="h-auto w-full drop-shadow-[0_40px_60px_rgba(0,0,0,0.55)]"
+                    />
+                  ) : (
+                    <Phone project={project} />
+                  )}
+                </motion.div>
+              </a>
             )}
 
-            {/* Floating detail card */}
+            {/* Floating detail card (ready-made mockups already include their own) */}
+            {!project.mockup && (
             <motion.div
               initial={{ opacity: 0, y: 30, x: -10 }}
               whileInView={{ opacity: 1, y: 0, x: 0 }}
@@ -248,10 +288,12 @@ function ShowcaseCard({
                 />
               </div>
             </motion.div>
-          </a>
+            )}
+          </div>
         </div>
       </motion.article>
     </div>
+    </>
   );
 }
 

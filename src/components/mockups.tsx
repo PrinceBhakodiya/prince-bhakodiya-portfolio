@@ -1,4 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight, Lock, RotateCw } from "lucide-react";
 import type { Project } from "@/data/projects";
 import { cn } from "@/lib/utils";
 
@@ -269,75 +274,279 @@ export function Phone({ project, className }: { project: Project; className?: st
   );
 }
 
-function CrmScreen({ project }: { project: Project }) {
-  const c = project.color;
-  const columns = [
-    ["New leads", 5],
-    ["Contacted", 4],
-    ["Demo booked", 3],
-    ["Won", 2],
-  ] as const;
+
+/* ───────────────────────── Antoc CRM (phone) ───────────────────────── */
+
+const ANTOC = "#6c5ce7";
+
+export function AntocPhoneScreen() {
+  const followUps = [
+    ["Rahul Mehta", "3 BHK · Andheri West", "Call · 11:30"],
+    ["Priya Desai", "Office space · BKC", "Site visit · 2:00"],
+    ["Amit Shah", "2 BHK · Powai", "WhatsApp · 4:15"],
+  ];
   return (
-    <div className="flex h-full bg-[#0f0e15] text-white">
-      {/* Sidebar */}
-      <div className="w-[19%] border-r border-white/[0.06] p-[1.6cqw]">
-        <div className="flex items-center gap-[0.8cqw]">
-          <span className="relative h-[2.6cqw] w-[2.6cqw] overflow-hidden rounded-[0.7cqw]">
-            <Image src={project.icon} alt="" fill sizes="24px" className="object-cover" unoptimized />
+    <div className="h-full bg-[#f5f5fb] text-[#16142b]">
+      <div className="rounded-b-[7cqw] pb-[6cqw] text-white" style={{ background: `linear-gradient(160deg, #7d6cf2, ${ANTOC} 60%, #5a48d6)` }}>
+        <StatusBar />
+        <div className="mt-[5cqw] flex items-center gap-[3cqw] px-[6cqw]">
+          <span className="relative h-[10cqw] w-[10cqw] overflow-hidden rounded-[2.8cqw] ring-1 ring-white/40">
+            <Image src="/projects/antoc-icon.png" alt="" fill sizes="40px" className="object-cover" />
           </span>
-          <span className="text-[1.4cqw] font-semibold">antoc</span>
-        </div>
-        <div className="mt-[2cqw] space-y-[0.6cqw] text-[1cqw] text-white/55">
-          {["Dashboard", "Leads", "Pipelines", "WhatsApp", "Broadcasts", "Automations", "Team", "Billing"].map((item, i) => (
-            <p key={item} className="rounded-[0.6cqw] px-[0.8cqw] py-[0.55cqw]" style={{ background: i === 2 ? `${c}33` : undefined, color: i === 2 ? "#fff" : undefined }}>
-              {item}
-            </p>
-          ))}
-        </div>
-      </div>
-      {/* Board */}
-      <div className="flex-1 p-[2cqw]">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[2cqw] font-semibold">Sales pipeline</p>
-            <p className="text-[1cqw] text-white/45">14 open deals · ₹18.4L value</p>
+          <div className="leading-tight">
+            <p className="text-[3.2cqw] text-white/75">Good morning,</p>
+            <p className="text-[4.8cqw] font-semibold">Prince</p>
           </div>
-          <span className="rounded-[0.7cqw] px-[1.2cqw] py-[0.6cqw] text-[1cqw] font-medium" style={{ background: c }}>
-            + New lead
-          </span>
         </div>
-        <div className="mt-[1.6cqw] grid grid-cols-4 gap-[1.2cqw]">
-          {columns.map(([name, count], col) => (
-            <div key={name} className="rounded-[1cqw] bg-white/[0.03] p-[0.9cqw]">
-              <p className="flex items-center gap-[0.6cqw] text-[1cqw] text-white/60">
-                <span className="h-[0.7cqw] w-[0.7cqw] rounded-full" style={{ background: ["#60a5fa", "#fbbf24", c, "#34d399"][col] }} />
-                {name} <span className="ml-auto">{count}</span>
-              </p>
-              {Array.from({ length: Math.min(count, 3) }).map((_, i) => (
-                <div key={i} className="mt-[0.8cqw] rounded-[0.8cqw] border border-white/[0.06] bg-white/[0.04] p-[0.8cqw]">
-                  <span className="block h-[0.8cqw] w-[70%] rounded-full bg-white/60" />
-                  <span className="mt-[0.6cqw] block h-[0.6cqw] w-[45%] rounded-full bg-white/20" />
-                  <div className="mt-[0.8cqw] flex items-center justify-between">
-                    <span className="h-[1.6cqw] w-[1.6cqw] rounded-full bg-white/15" />
-                    <span className="rounded-full bg-[#25d366]/20 px-[0.6cqw] text-[0.8cqw] text-[#25d366]">WA</span>
-                  </div>
-                </div>
-              ))}
+        <div className="mx-[6cqw] mt-[5cqw] grid grid-cols-2 gap-[3cqw]">
+          {[
+            ["Total leads", "381"],
+            ["Follow-ups", "522"],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-[4cqw] bg-white/15 p-[3.5cqw] backdrop-blur">
+              <p className="text-[3cqw] text-white/75">{label}</p>
+              <p className="text-[7cqw] font-bold leading-tight">{value}</p>
             </div>
           ))}
         </div>
+      </div>
+      <div className="flex items-center justify-between px-[6cqw] pt-[5cqw]">
+        <p className="text-[4.2cqw] font-semibold">Today&apos;s follow-ups</p>
+        <span className="text-[3.2cqw] font-medium" style={{ color: ANTOC }}>See all</span>
+      </div>
+      <div className="mt-[3cqw] space-y-[2.6cqw] px-[6cqw]">
+        {followUps.map(([name, need, when], i) => (
+          <div key={name} className="flex items-center gap-[3cqw] rounded-[4cqw] bg-white p-[3cqw] shadow-[0_2px_10px_rgba(40,30,120,0.06)]">
+            <span className="flex h-[9cqw] w-[9cqw] shrink-0 items-center justify-center rounded-full text-[3.4cqw] font-semibold text-white" style={{ background: ["#6c5ce7", "#f59e0b", "#10b981"][i] }}>
+              {name[0]}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-[3.6cqw] font-semibold">{name}</p>
+              <p className="truncate text-[2.8cqw] text-black/45">{need}</p>
+            </div>
+            <span className="ml-auto shrink-0 rounded-full px-[2.4cqw] py-[1cqw] text-[2.6cqw] font-medium" style={{ background: `${ANTOC}1a`, color: ANTOC }}>
+              {when}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="absolute inset-x-0 bottom-0 flex justify-around border-t border-black/5 bg-white px-[4cqw] pb-[6cqw] pt-[2.6cqw] text-[2.6cqw] text-black/40">
+        {["Home", "Leads", "Deals", "Inbox", "More"].map((t, i) => (
+          <span key={t} className="flex flex-col items-center gap-[1cqw]" style={{ color: i === 0 ? ANTOC : undefined }}>
+            <span className="h-[4.6cqw] w-[4.6cqw] rounded-[1.4cqw]" style={{ background: i === 0 ? ANTOC : "rgba(0,0,0,0.12)" }} />
+            {t}
+          </span>
+        ))}
       </div>
     </div>
   );
 }
 
-export function Laptop({ project, className }: { project: Project; className?: string }) {
+/** Phone frame around any screen, used where a project brings its own screen. */
+export function PhoneFrame({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn("relative aspect-[9/19.2] rounded-[16%/7.4%] bg-[#1b1a21] p-[3%] shadow-[0_50px_100px_-30px_rgba(0,0,0,0.9)] ring-1 ring-white/15", className)}>
+      <div className="relative h-full w-full overflow-hidden rounded-[13%/6.2%]" style={{ containerType: "inline-size" }}>
+        {children}
+        <span className="absolute left-1/2 top-[1.8%] h-[3.6%] w-[31%] -translate-x-1/2 rounded-full bg-black" />
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Suppr ───────────────────────── */
+
+const SUPPR = "#ffd60a";
+
+function SupprWebScreen() {
+  return (
+    <div className="relative h-full overflow-hidden bg-[#0a0a0a] px-[9cqw] text-white">
+      <div className="pointer-events-none absolute -left-[10cqw] -top-[20cqw] h-[50cqw] w-[60cqw] rounded-full bg-[radial-gradient(closest-side,rgba(255,214,10,0.12),transparent)]" />
+      <div className="relative flex items-center justify-between py-[2.6cqw]">
+        <span className="text-[2.4cqw] font-extrabold tracking-[-0.05em]">
+          Suppr<span style={{ color: SUPPR }}>.</span>
+        </span>
+        <span className="flex items-center gap-[2.4cqw] text-[1.25cqw] text-white/80">
+          Guests <span>Chefs &amp; pros</span>
+          <span className="rounded-[0.8cqw] px-[1.4cqw] py-[0.8cqw] font-bold text-black" style={{ background: SUPPR }}>Open Suppr</span>
+        </span>
+      </div>
+      <p className="relative mt-[5cqw] text-[1cqw] font-bold tracking-[0.3em]" style={{ color: SUPPR }}>THESUPPR.IN</p>
+      <p className="relative mt-[1.4cqw] font-display text-[5.6cqw] font-extrabold leading-[0.98] tracking-[-0.055em]">
+        Once-in-a-lifetime dining<span style={{ color: SUPPR }}>,</span>
+        <br />
+        and the pros who make it
+        <br />
+        happen<span style={{ color: SUPPR }}>.</span>
+      </p>
+      <p className="relative mt-[2.4cqw] max-w-[46cqw] text-[1.4cqw] leading-relaxed text-white/55">
+        Hire a private chef for the table at home, or take a seat at a house party hosted by someone who cooks like it matters.
+      </p>
+      <div className="relative mt-[3cqw] flex gap-[1.2cqw] text-[1.3cqw] font-bold">
+        <span className="rounded-[1.2cqw] px-[2cqw] py-[1.4cqw] text-black" style={{ background: SUPPR }}>Browse chefs &amp; parties</span>
+        <span className="rounded-[1.2cqw] border border-white/20 px-[2cqw] py-[1.4cqw]">I&apos;m a chef or pro</span>
+      </div>
+    </div>
+  );
+}
+
+export function SupprPhoneScreen() {
+  const chefs = [
+    ["Chef Aarav", "Coastal tasting menu", "₹2,400 / guest", "#f97316"],
+    ["Meera's table", "House party · 8 seats", "₹1,600 / seat", "#ec4899"],
+    ["Chef Kabir", "Modern Punjabi", "₹1,900 / guest", "#22c55e"],
+  ];
+  return (
+    <div className="h-full bg-[#0b0b0b] text-white">
+      <StatusBar />
+      <div className="mt-[5cqw] flex items-center justify-between px-[6cqw]">
+        <span className="text-[6cqw] font-extrabold tracking-[-0.05em]">
+          Suppr<span style={{ color: SUPPR }}>.</span>
+        </span>
+        <span className="relative h-[9cqw] w-[9cqw] overflow-hidden rounded-[2.6cqw]">
+          <Image src="/projects/suppr-pro-icon.png" alt="" fill sizes="36px" className="object-cover" />
+        </span>
+      </div>
+      <p className="mt-[4cqw] px-[6cqw] text-[6.6cqw] font-extrabold leading-[1.02] tracking-[-0.045em]">
+        Two ways to
+        <br />
+        eat well<span style={{ color: SUPPR }}>.</span>
+      </p>
+      <div className="mt-[4cqw] flex gap-[2cqw] px-[6cqw] text-[3.2cqw] font-bold">
+        <span className="rounded-full px-[3.6cqw] py-[1.8cqw] text-black" style={{ background: SUPPR }}>Hire a chef</span>
+        <span className="rounded-full border border-white/20 px-[3.6cqw] py-[1.8cqw]">House parties</span>
+      </div>
+      <div className="mt-[4cqw] space-y-[2.6cqw] px-[6cqw]">
+        {chefs.map(([name, meta, price, tone]) => (
+          <div key={name} className="flex items-center gap-[3cqw] rounded-[4cqw] bg-white/[0.06] p-[3cqw]">
+            <span className="h-[12cqw] w-[12cqw] shrink-0 rounded-[3cqw]" style={{ background: `linear-gradient(135deg, ${tone}, #1f1f1f)` }} />
+            <div className="min-w-0">
+              <p className="truncate text-[3.6cqw] font-bold">{name}</p>
+              <p className="truncate text-[2.8cqw] text-white/50">{meta}</p>
+              <p className="text-[3cqw] font-semibold" style={{ color: SUPPR }}>{price}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Safari-style browser in a MacBook ───────────────────────── */
+
+function Screenshot({ src, alt }: { src: string; alt: string }) {
+  // Eager: tabs swap instantly and cards don't flash blank while the stack scrolls in
+  return <Image src={src} alt={alt} fill loading="eager" sizes="(min-width: 1024px) 680px, 90vw" className="object-cover object-top" />;
+}
+
+export const webApps = {
+  antoc: {
+    title: "Antoc AI CRM — Dashboard",
+    url: "app.antoc.ai/dashboard",
+    href: "https://app.antoc.ai",
+    icon: "/projects/antoc-icon.png",
+    Screen: () => <Screenshot src="/projects/antoc-web.jpg" alt="Antoc CRM dashboard" />,
+  },
+  ipobuzz: {
+    title: "IPO Buzz — Live IPOs & GMP",
+    url: "ipobuzz.in",
+    href: "https://ipobuzz.in",
+    icon: "/projects/ipobuzz-icon.png",
+    Screen: () => <Screenshot src="/projects/ipobuzz-web.jpg" alt="IPO Buzz website home page" />,
+  },
+  suppr: {
+    title: "Suppr — Home dining",
+    url: "thesuppr.in",
+    href: "https://thesuppr.in",
+    icon: "/projects/suppr-icon.png",
+    Screen: SupprWebScreen,
+  },
+  brokersite: {
+    title: "BrokerSite — Broker websites",
+    url: "brokersite.in",
+    href: "https://brokersite.in",
+    icon: "/projects/brokersite-icon.png",
+    Screen: () => <Screenshot src="/projects/brokersite-web.jpg" alt="BrokerSite home page" />,
+  },
+} as const;
+
+export type WebAppId = keyof typeof webApps;
+
+/**
+ * A MacBook running Safari with a tab for every web app I've shipped. The card's
+ * own app opens first; the other tabs switch the page, and clicking the page
+ * opens the live site.
+ */
+export function BrowserLaptop({ initial, className }: { initial: WebAppId; className?: string }) {
+  const order = [initial, ...(Object.keys(webApps) as WebAppId[]).filter((id) => id !== initial)];
+  const [activeId, setActiveId] = useState<WebAppId>(initial);
+  const app = webApps[activeId];
+
   return (
     <div className={cn("relative", className)}>
       <div className="rounded-[2.2%/3.4%] bg-[#1b1a21] p-[1.4%] shadow-[0_50px_100px_-30px_rgba(0,0,0,0.9)] ring-1 ring-white/15">
-        <div className="relative aspect-[16/10] overflow-hidden rounded-[1%/1.6%] bg-black" style={{ containerType: "inline-size" }}>
-          <CrmScreen project={project} />
-          <span className="absolute left-1/2 top-0 h-[3.2%] w-[14%] -translate-x-1/2 rounded-b-[0.8cqw] bg-black" />
+        <div className="relative flex aspect-[16/10] flex-col overflow-hidden rounded-[1%/1.6%] bg-[#2a2833]" style={{ containerType: "inline-size" }}>
+          {/* Tab bar */}
+          <div className="flex items-center gap-[1cqw] px-[1.4cqw] pt-[1cqw]">
+            <span className="flex gap-[0.6cqw] pb-[0.8cqw]">
+              <span className="h-[1.1cqw] w-[1.1cqw] rounded-full bg-[#ff5f57]" />
+              <span className="h-[1.1cqw] w-[1.1cqw] rounded-full bg-[#febc2e]" />
+              <span className="h-[1.1cqw] w-[1.1cqw] rounded-full bg-[#28c840]" />
+            </span>
+            <div className="ml-[1cqw] flex min-w-0 flex-1 items-end gap-[0.4cqw]">
+              {order.map((id) => {
+                const tab = webApps[id];
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setActiveId(id)}
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-[0.7cqw] rounded-t-[0.8cqw] px-[1cqw] py-[0.7cqw] text-left text-[1.05cqw] transition-colors",
+                      id === activeId ? "bg-[#3a3845] text-white" : "text-white/55 hover:bg-white/[0.05] hover:text-white/80"
+                    )}
+                  >
+                    <span className="relative h-[1.4cqw] w-[1.4cqw] shrink-0 overflow-hidden rounded-[0.35cqw]">
+                      <Image src={tab.icon} alt="" fill sizes="16px" className="object-cover" />
+                    </span>
+                    <span className="truncate">{tab.title}</span>
+                  </button>
+                );
+              })}
+              <span className="px-[0.8cqw] pb-[0.7cqw] text-[1.3cqw] text-white/40">+</span>
+            </div>
+          </div>
+          {/* Toolbar */}
+          <div className="flex items-center gap-[1cqw] bg-[#3a3845] px-[1.4cqw] py-[0.7cqw] text-white/50">
+            <ChevronLeft className="h-[1.4cqw] w-[1.4cqw]" />
+            <ChevronRight className="h-[1.4cqw] w-[1.4cqw]" />
+            <span className="mx-auto flex w-[42%] items-center justify-center gap-[0.6cqw] rounded-[0.7cqw] bg-black/25 py-[0.45cqw] text-[1.05cqw] text-white/80">
+              <Lock className="h-[0.9cqw] w-[0.9cqw]" /> {app.url}
+            </span>
+            <RotateCw className="h-[1.2cqw] w-[1.2cqw]" />
+          </div>
+          {/* Page */}
+          <a
+            href={app.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor={`Open ${app.url}`}
+            className="relative block flex-1 overflow-hidden bg-white"
+            aria-label={`Open ${app.title}`}
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeId}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="absolute inset-0"
+              >
+                <app.Screen />
+              </motion.div>
+            </AnimatePresence>
+          </a>
         </div>
       </div>
       <div className="relative mx-[-4%] h-[3.6%] min-h-3 rounded-b-[40%_100%] bg-gradient-to-b from-[#2c2b33] to-[#141318]">

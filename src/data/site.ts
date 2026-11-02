@@ -3,7 +3,7 @@ export const siteConfig = {
   title: "Prince Bhakodiya | Full Stack Developer & Product Engineer",
   description:
     "Full Stack Developer and Tech Lead building scalable products and software — mobile apps, backends, and real-time platforms used by thousands of users.",
-  url: "https://princebhakodiya.dev",
+  url: "https://princebhakodiya.in",
   logo: "/logo.png",
   favicon: "/favicon.ico",
   ogImage: "/og-image.png",

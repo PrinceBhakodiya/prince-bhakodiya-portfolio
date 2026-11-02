@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Static export served by nginx on the prince-instances VM (see deploy.sh).
+  output: "export",
+  images: { unoptimized: true },
 };
 
 export default nextConfig;
