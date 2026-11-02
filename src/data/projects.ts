@@ -23,37 +23,28 @@ export type Project = {
     caseStudy?: string;
   };
   architecture?: string[];
+  /** Square app icon used in the dock and showcase */
+  icon: string;
+  /** Short serif line under the title */
+  tagline: string;
+  /** Platform pill, e.g. "Android & iOS" */
+  kind: string;
+  /** Brand colour for dots, glows and the generated screen */
+  color: string;
+  screen: "ride" | "trade" | "ipo" | "shop" | "food" | "crm";
+  /** Floating detail card next to the device */
+  overlay: { label: string; value: string; meta: string };
 };
 
 export const projects: Project[] = [
   {
-    id: "antoc",
-    title: "Antoc CRM",
-    subtitle: "Enterprise sales automation",
-    description:
-      "End-to-end CRM with mobile and web clients — WhatsApp automation, lead pipelines, team workflows, analytics, and subscription billing for sales teams.",
-    category: "SaaS",
-    platforms: ["Mobile App", "Web Dashboard", "Admin Panel", "WhatsApp API"],
-    features: [
-      "WhatsApp API integration",
-      "Broadcast & drip campaigns",
-      "Lead tracking & pipelines",
-      "Team & role permissions",
-      "CRM dashboards & analytics",
-      "Automation workflows",
-      "Mobile-first field sales",
-    ],
-    tech: ["Flutter", "React", "Node.js", "MongoDB"],
-    gradient: "from-violet-600/30 via-purple-600/20 to-violet-800/30",
-    accent: "violet",
-    image: "/projects/antoc.svg",
-    imageAlt: "Antoc CRM logo — purple brand mark",
-    links: {
-      website: "https://antoc.ai/",
-    },
-  },
-  {
     id: "vayu",
+    icon: "/projects/vayu.webp",
+    tagline: "Book a ride in two taps.",
+    kind: "Android & iOS",
+    color: "#4f5bff",
+    screen: "ride",
+    overlay: { label: "Live ride", value: "Driver 2 min away", meta: "Auto · OTP 4821" },
     title: "Vayu Ride",
     subtitle: "Ride-hailing platform",
     description:
@@ -92,6 +83,12 @@ export const projects: Project[] = [
   },
   {
     id: "gogogo",
+    icon: "/projects/gogogo.webp",
+    tagline: "Go anywhere, on demand.",
+    kind: "Rider & driver apps",
+    color: "#a855f7",
+    screen: "ride",
+    overlay: { label: "Fare estimate", value: "₹186", meta: "Cab · 12 min trip" },
     title: "Gogogo Ride",
     subtitle: "Ride-hailing platform",
     description:
@@ -131,6 +128,12 @@ export const projects: Project[] = [
   },
   {
     id: "speartrades",
+    icon: "/projects/speartrades.webp",
+    tagline: "Read the market in real time.",
+    kind: "Android & iOS",
+    color: "#84cc16",
+    screen: "trade",
+    overlay: { label: "BTC / USDT", value: "+4.82%", meta: "Live · WebSocket feed" },
     title: "Speartrades",
     subtitle: "Crypto trading platform",
     description:
@@ -161,6 +164,12 @@ export const projects: Project[] = [
   },
   {
     id: "ipohub",
+    icon: "/projects/ipohub.webp",
+    tagline: "Never miss an IPO.",
+    kind: "Android app",
+    color: "#3b82f6",
+    screen: "ipo",
+    overlay: { label: "Subscription", value: "42.6×", meta: "Retail · Day 3" },
     title: "IPOHub",
     subtitle: "All IPO information in one place",
     description:
@@ -188,6 +197,12 @@ export const projects: Project[] = [
   },
   {
     id: "clozzet",
+    icon: "/projects/clozzet.webp",
+    tagline: "Fashion at your door in 30 minutes.",
+    kind: "Android & iOS",
+    color: "#2563eb",
+    screen: "shop",
+    overlay: { label: "Order status", value: "Out for delivery", meta: "Arriving in 18 min" },
     title: "Clozzet",
     subtitle: "30-minute fashion delivery",
     description:
@@ -225,6 +240,12 @@ export const projects: Project[] = [
   },
   {
     id: "cravekart",
+    icon: "/projects/cravekart.webp",
+    tagline: "Lunch for the whole office, sorted.",
+    kind: "Android app",
+    color: "#22c55e",
+    screen: "food",
+    overlay: { label: "Team lunch", value: "48 meals", meta: "Scheduled · 12:30 PM" },
     title: "Cravekart",
     subtitle: "Corporate food delivery",
     description:
@@ -249,6 +270,38 @@ export const projects: Project[] = [
     links: {
       playStore:
         "https://play.google.com/store/apps/details?id=com.cravekart.app&hl=en_IN",
+    },
+  },
+  {
+    id: "antoc",
+    icon: "/projects/antoc-icon.svg",
+    tagline: "Every lead, one pipeline.",
+    kind: "Web, Android & iOS",
+    color: "#8b5cf6",
+    screen: "crm",
+    overlay: { label: "Broadcast", value: "2,140 delivered", meta: "WhatsApp · 98% read" },
+    title: "Antoc CRM",
+    subtitle: "Enterprise sales automation",
+    description:
+      "End-to-end CRM with mobile and web clients — WhatsApp automation, lead pipelines, team workflows, analytics, and subscription billing for sales teams.",
+    category: "SaaS",
+    platforms: ["Mobile App", "Web Dashboard", "Admin Panel", "WhatsApp API"],
+    features: [
+      "WhatsApp API integration",
+      "Broadcast & drip campaigns",
+      "Lead tracking & pipelines",
+      "Team & role permissions",
+      "CRM dashboards & analytics",
+      "Automation workflows",
+      "Mobile-first field sales",
+    ],
+    tech: ["Flutter", "React", "Node.js", "MongoDB"],
+    gradient: "from-violet-600/30 via-purple-600/20 to-violet-800/30",
+    accent: "violet",
+    image: "/projects/antoc.svg",
+    imageAlt: "Antoc CRM logo — purple brand mark",
+    links: {
+      website: "https://antoc.ai/",
     },
   },
 ];

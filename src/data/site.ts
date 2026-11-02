@@ -20,11 +20,19 @@ export const siteConfig = {
     whatsapp: "https://wa.me/919974204663",
     email: "mailto:bhakodiyaprince05@gmail.com",
   },
+  location: "India",
+  timeZone: "Asia/Kolkata",
   stats: [
+    { value: "5+", label: "Years" },
     { value: "100K+", label: "Users" },
     { value: "15+", label: "Projects" },
-    { value: "Multi", label: "Platform Systems" },
-    { value: "Real-time", label: "Infrastructure" },
+    { value: "7", label: "Apps shipped" },
+  ],
+  currently: [
+    "Leading engineering as Tech Lead",
+    "Shipping ride-hailing apps at scale",
+    "Building real-time systems",
+    "Putting LLMs into real products",
   ],
   typingTexts: [
     "scalable products",
