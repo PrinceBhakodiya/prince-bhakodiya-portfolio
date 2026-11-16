@@ -4,10 +4,12 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { cancelFrame, frame } from "framer-motion";
 import { setLenis } from "@/lib/scroll";
+import { isLite } from "@/lib/lite";
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Native scrolling on phones and low-end machines: smoothing costs a frame loop that never stops
+    if (isLite()) return;
 
     const lenis = new Lenis({
       duration: 1.2,

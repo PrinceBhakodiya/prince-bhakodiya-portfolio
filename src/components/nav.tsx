@@ -33,21 +33,33 @@ export function Nav() {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 200, damping: 40 });
 
+  // Reading scrollY is cheap; it never forces a layout
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-      const probe = window.innerHeight * 0.4;
-      let current: string | null = null;
-      for (const { id } of links) {
-        if (!id) continue;
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= probe) current = id;
-      }
-      setActive(current);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Active section: the one crossing a line 40% down the viewport, tracked by the
+  // browser instead of measuring every section on every scroll event
+  useEffect(() => {
+    const sections = links
+      .map((l) => (l.id ? document.getElementById(l.id) : null))
+      .filter((el): el is HTMLElement => !!el);
+    if (!sections.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) setActive(e.target.id);
+          // Scrolled back above the first section
+          else if (e.target === sections[0] && e.boundingClientRect.top > 0) setActive(null);
+        }
+      },
+      { rootMargin: "-40% 0px -60% 0px" }
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
   }, []);
 
   // Real <a href>s so crawlers can follow every item; on the home page section links scroll instead

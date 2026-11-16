@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -20,7 +20,8 @@ import { AntocPhoneScreen, BrowserLaptop, Phone, PhoneFrame, SupprPhoneScreen } 
 
 const companionScreens = { antoc: AntocPhoneScreen, suppr: SupprPhoneScreen } as const;
 import { Reveal, SectionTitle, ease } from "./reveal";
-import { useClock } from "@/lib/use-client";
+import { useClock, useMediaQuery } from "@/lib/use-client";
+import { useLite } from "@/lib/lite";
 
 function yearInfo(day: string) {
   const now = new Date(day);
@@ -106,14 +107,17 @@ function ShowcaseCard({
   index,
   total,
   progress,
+  stacked,
 }: {
   project: Project;
   index: number;
   total: number;
   progress: MotionValue<number>;
+  stacked: boolean;
 }) {
-  // Cards underneath shrink slightly as the next one slides over them
-  const scale = useTransform(progress, [index / total, 1], [1, 1 - (total - index) * 0.025]);
+  // Cards underneath shrink slightly as the next one slides over them (sticky desktop layout only)
+  const shrink = useTransform(progress, [index / total, 1], [1, 1 - (total - index) * 0.025]);
+  const scale = stacked ? shrink : 1;
   const primary = primaryLink(project);
   const isWeb = !!project.browser;
   const Companion = project.companion ? companionScreens[project.companion] : null;
@@ -342,14 +346,34 @@ export function Shipping() {
   const { scrollYProgress } = useScroll({ target: stackRef, offset: ["start start", "end end"] });
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(false);
+  const lite = useLite();
+  const wide = useMediaQuery("(min-width: 1024px)");
+  const stacked = wide && !lite;
+
+  // Which card is on screen. Marker positions are measured once (and again when the
+  // layout resizes), so each scroll event only compares numbers and never forces a layout.
+  const tops = useRef<number[]>([]);
+  useEffect(() => {
+    const stack = stackRef.current;
+    if (!stack) return;
+    const measure = () => {
+      tops.current = projects.map((p) => {
+        const el = document.getElementById(`app-${p.id}`);
+        return el ? el.getBoundingClientRect().top + window.scrollY : Infinity;
+      });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(stack);
+    return () => ro.disconnect();
+  }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    setVisible(v > 0 && v < 1);
-    // The card whose top has reached the sticky line is the one on screen
+    setVisible(v > 0 && v < 1); // bails out of re-rendering when unchanged
+    const line = window.scrollY + window.innerHeight * 0.5;
     let current = 0;
-    projects.forEach((p, i) => {
-      const el = document.getElementById(`app-${p.id}`);
-      if (el && el.getBoundingClientRect().top <= window.innerHeight * 0.5) current = i;
+    tops.current.forEach((top, i) => {
+      if (top <= line) current = i;
     });
     setActive(current);
   });
@@ -380,7 +404,7 @@ export function Shipping() {
 
         <div ref={stackRef} className="relative mt-16 flex flex-col gap-6 sm:mt-24 lg:gap-10">
           {projects.map((project, i) => (
-            <ShowcaseCard key={project.id} project={project} index={i} total={projects.length} progress={scrollYProgress} />
+            <ShowcaseCard key={project.id} project={project} index={i} total={projects.length} progress={scrollYProgress} stacked={stacked} />
           ))}
         </div>
       </div>

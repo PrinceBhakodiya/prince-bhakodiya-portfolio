@@ -93,13 +93,19 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const LITE_SCRIPT = `try{var n=navigator,m=function(q){return matchMedia(q).matches};if(m("(pointer: coarse)")||m("(prefers-reduced-motion: reduce)")||(n.hardwareConcurrency||8)<=4||(n.deviceMemory||8)<=4)document.documentElement.classList.add("lite")}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en-IN" className="dark">
+    <html lang="en-IN" className="dark" suppressHydrationWarning>
+      <head>
+        {/* Runs before first paint: phones, low-core / low-memory machines and reduced-motion users get "lite" mode */}
+        <script dangerouslySetInnerHTML={{ __html: LITE_SCRIPT }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${interTight.variable} ${instrumentSerif.variable} min-h-screen bg-background text-foreground antialiased`}
       >

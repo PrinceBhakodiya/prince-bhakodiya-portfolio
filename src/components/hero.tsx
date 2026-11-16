@@ -9,6 +9,7 @@ import { scrollToId } from "@/lib/scroll";
 import { Dock } from "./dock";
 import { ease } from "./reveal";
 import { useClock, useMediaQuery } from "@/lib/use-client";
+import { useLite } from "@/lib/lite";
 
 function formatLocalTime() {
   return new Intl.DateTimeFormat("en-IN", {
@@ -72,11 +73,13 @@ function FallingWord({
   salt,
   reduced,
   draggable,
+  dust,
 }: {
   text: string;
   salt: number;
   reduced: boolean;
   draggable: boolean;
+  dust: boolean;
 }) {
   return (
     <span className="inline-flex whitespace-nowrap" aria-hidden>
@@ -120,7 +123,7 @@ function FallingWord({
                 {char}
               </motion.span>
             </motion.span>
-            {!reduced && <Dust delay={delay + FALL * IMPACT - 0.02} />}
+            {dust && !reduced && <Dust delay={delay + FALL * IMPACT - 0.02} />}
           </span>
         );
       })}
@@ -177,6 +180,7 @@ export function Hero() {
   const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.4]);
   const photoY = useTransform(scrollYProgress, [0, 1], [0, 60]);
   const reduced = useReducedMotion() ?? false;
+  const lite = useLite();
   const canDrag = useMediaQuery("(pointer: fine)");
   const [portrait, setPortrait] = useState(false);
   const portraitRef = useRef<HTMLImageElement>(null);
@@ -191,7 +195,7 @@ export function Hero() {
     <section ref={ref} id="top" className="relative overflow-hidden px-4 pb-16 pt-28 sm:px-8 sm:pt-32">
       {/* Atmosphere */}
       <motion.div
-        style={{ scale: glowScale }}
+        style={lite ? undefined : { scale: glowScale }}
         className="pointer-events-none absolute left-1/2 top-[-10%] h-[720px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(139,92,246,0.38),rgba(109,40,217,0.12)_55%,transparent)]"
       />
       <div className="grid-floor pointer-events-none absolute inset-x-0 bottom-0 h-[420px]" />
@@ -257,7 +261,7 @@ export function Hero() {
             </motion.div>
           </motion.div>
           {!portrait && (
-            <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet/35 blur-[90px] sm:h-96 sm:w-[34rem]" />
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(139,92,246,0.35),rgba(139,92,246,0.12)_55%,transparent)] sm:h-[34rem] sm:w-[48rem]" />
           )}
 
           <motion.h1
@@ -268,8 +272,8 @@ export function Hero() {
             className="display relative flex flex-col items-center text-center text-[18.5vw] text-[#f3f2f5] lg:flex-row lg:justify-center lg:gap-[0.22em] lg:text-[10.6vw] 2xl:text-[156px]"
           >
             <span className="sr-only">{siteConfig.name}</span>
-            <FallingWord text="Prince" salt={0} reduced={reduced} draggable={canDrag} />
-            <FallingWord text="Bhakodiya" salt={1} reduced={reduced} draggable={canDrag} />
+            <FallingWord text="Prince" salt={0} reduced={reduced} draggable={canDrag} dust={!lite} />
+            <FallingWord text="Bhakodiya" salt={1} reduced={reduced} draggable={canDrag} dust={!lite} />
           </motion.h1>
 
           {/* The floor the letters land on: lights up under the impacts, then rests */}
