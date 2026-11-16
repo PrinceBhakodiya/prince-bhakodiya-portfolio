@@ -42,6 +42,12 @@ gcloud compute ssh "$INSTANCE" --zone "$ZONE" --project "$PROJECT" --quiet --com
   sudo cp -a /tmp/portfolio-out/. $WEB_ROOT/
   cd /tmp/portfolio-out && for f in * .[!.]*; do [ -e \"\$f\" ] && sudo chown -R www:www \"$WEB_ROOT/\$f\"; done; cd /
   rm -rf /tmp/portfolio-out /tmp/portfolio.tgz
+  # Next.js exports share images as extensionless 'opengraph-image' files; serve them as PNG
+  OG_CONF=/www/server/panel/vhost/nginx/extension/princebhakodiya.in/og-images.conf
+  if [ ! -f \$OG_CONF ]; then
+    echo 'location ~ /opengraph-image\$ { default_type image/png; expires 7d; }' | sudo tee \$OG_CONF >/dev/null
+    sudo /www/server/nginx/sbin/nginx -t -c /www/server/nginx/conf/nginx.conf && sudo /www/server/nginx/sbin/nginx -s reload -c /www/server/nginx/conf/nginx.conf
+  fi
   echo \"Backup of previous site: \$BACKUP\"
 "
 

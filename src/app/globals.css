@@ -195,3 +195,61 @@ body::after {
     animation: none;
   }
 }
+
+/* Long-form text for blog posts, case studies and landing pages */
+.prose-dark {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: rgba(243, 242, 245, 0.78);
+}
+.prose-dark > * + * {
+  margin-top: 1.25em;
+}
+.prose-dark h2 {
+  margin-top: 2.4em;
+  font-family: var(--font-inter-tight), var(--font-geist-sans), sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  color: #f3f2f5;
+}
+.prose-dark h3 {
+  margin-top: 1.8em;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #f3f2f5;
+}
+.prose-dark a {
+  color: var(--violet-soft);
+  text-decoration: underline;
+  text-decoration-color: rgba(167, 139, 250, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.prose-dark a:hover {
+  text-decoration-color: var(--violet-soft);
+}
+.prose-dark ul,
+.prose-dark ol {
+  padding-left: 1.3em;
+}
+.prose-dark ul {
+  list-style: disc;
+}
+.prose-dark ol {
+  list-style: decimal;
+}
+.prose-dark li + li {
+  margin-top: 0.5em;
+}
+.prose-dark li::marker {
+  color: var(--violet-soft);
+}
+.prose-dark .callout {
+  border-left: 3px solid var(--violet);
+  border-radius: 0 16px 16px 0;
+  background: rgba(139, 92, 246, 0.08);
+  padding: 1.1em 1.4em;
+  color: rgba(243, 242, 245, 0.88);
+}

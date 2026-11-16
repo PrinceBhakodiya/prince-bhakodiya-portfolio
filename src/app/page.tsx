@@ -7,6 +7,7 @@ import { Experience } from "@/components/experience";
 import { Stack } from "@/components/stack";
 import { Services } from "@/components/services";
 import { Contact } from "@/components/contact";
+import { Writing } from "@/components/writing";
 import { Footer } from "@/components/footer";
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
         <Experience />
         <Stack />
         <Services />
+        <Writing />
         <Contact />
       </main>
       <Footer />

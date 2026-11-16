@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Inter_Tight, Instrument_Serif } from "next/font/goog
 import "./globals.css";
 import { SmoothScrollProvider } from "@/providers/smooth-scroll-provider";
 import { siteConfig } from "@/data/site";
+import { JsonLd } from "@/components/json-ld";
+import { personSchema, websiteSchema } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,40 +38,32 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: [
     "Prince Bhakodiya",
-    "Full Stack Developer",
-    "Product Engineer",
+    "Flutter developer in Ahmedabad",
+    "Full stack developer Ahmedabad",
+    "App developer Ahmedabad",
+    "Mobile app developer India",
+    "Node.js developer India",
+    "Next.js developer",
     "Tech Lead",
-    "AI Engineer",
-    "Flutter Developer",
-    "Node.js",
-    "Next.js",
-    "System Design",
-    "Portfolio",
+    "Freelance app developer Gujarat",
   ],
   authors: [{ name: siteConfig.name }],
   creator: siteConfig.name,
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "en_IN",
     url: siteConfig.url,
     title: siteConfig.title,
     description: siteConfig.description,
     siteName: siteConfig.name,
-    images: [
-      {
-        url: siteConfig.ogImage,
-        width: 1200,
-        height: 630,
-        alt: siteConfig.name,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.title,
     description: siteConfig.description,
-    images: [siteConfig.ogImage],
   },
+  alternates: { canonical: "/" },
+  category: "technology",
   icons: {
     icon: [
       { url: siteConfig.logo, type: "image/png", sizes: "512x512" },
@@ -105,10 +99,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en-IN" className="dark">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${interTight.variable} ${instrumentSerif.variable} min-h-screen bg-background text-foreground antialiased`}
       >
+        {/* Site-wide identity: every page's schema points at this Person and WebSite */}
+        <JsonLd data={[personSchema(), websiteSchema()]} />
         <SmoothScrollProvider>{children}</SmoothScrollProvider>
       </body>
     </html>

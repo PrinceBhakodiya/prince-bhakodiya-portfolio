@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useMotionValueEvent,
@@ -196,6 +197,12 @@ function ShowcaseCard({
                   <s.icon className="h-4 w-4" /> {s.label}
                 </a>
               ))}
+              <Link
+                href={`/projects/${project.id}/`}
+                className="flex h-13 items-center gap-1.5 rounded-full px-3 text-[15px] text-foreground/80 underline decoration-white/25 underline-offset-4 transition-colors hover:text-foreground hover:decoration-white/70"
+              >
+                Case study <ArrowUpRight className="h-4 w-4" />
+              </Link>
               {host && <span className="font-mono text-sm text-muted">{host}</span>}
             </div>
           </div>

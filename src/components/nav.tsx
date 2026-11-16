@@ -2,23 +2,32 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 import { siteConfig } from "@/data/site";
 import { scrollToId } from "@/lib/scroll";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { id: "shipping", label: "Shipping" },
-  { id: "about", label: "About" },
-  { id: "experience", label: "Experience" },
-  { id: "stack", label: "Stack" },
+/** `id` links scroll to a home-page section; `href` links are separate pages. */
+const links: { label: string; id?: string; href?: string }[] = [
+  { id: "shipping", label: "Work" },
+  { href: "/projects/", label: "Projects" },
+  { href: "/blog/", label: "Blog" },
+  { href: "/about/", label: "About" },
   { id: "services", label: "Services" },
   { id: "contact", label: "Contact" },
 ];
 
+const keyOf = (link: (typeof links)[number]) => link.id ?? link.href!;
+
 export function Nav() {
-  const [active, setActive] = useState<string | null>(null);
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+  const [sectionActive, setActive] = useState<string | null>(null);
+  // On other pages the active item is the page itself (e.g. /blog/... highlights Blog)
+  const active = onHome ? sectionActive : (links.find((l) => l.href && pathname.startsWith(l.href))?.href ?? null);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { scrollYProgress } = useScroll();
@@ -30,6 +39,7 @@ export function Nav() {
       const probe = window.innerHeight * 0.4;
       let current: string | null = null;
       for (const { id } of links) {
+        if (!id) continue;
         const el = document.getElementById(id);
         if (el && el.getBoundingClientRect().top <= probe) current = id;
       }
@@ -40,9 +50,14 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const go = (id: string) => {
+  // Real <a href>s so crawlers can follow every item; on the home page section links scroll instead
+  const hrefOf = (link: (typeof links)[number]) => link.href ?? `/#${link.id}`;
+  const go = (e: React.MouseEvent, link: (typeof links)[number]) => {
     setOpen(false);
-    scrollToId(id);
+    if (link.id && onHome) {
+      e.preventDefault();
+      scrollToId(link.id);
+    }
   };
 
   return (
@@ -57,12 +72,22 @@ export function Nav() {
           )}
         />
         <div className="relative mx-auto flex max-w-[1440px] items-center justify-between gap-4">
-          <button onClick={() => go("top")} className="flex items-center gap-2.5" aria-label="Back to top">
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (onHome) {
+                e.preventDefault();
+                scrollToId("top");
+              }
+            }}
+            className="flex items-center gap-2.5"
+            aria-label="Prince Bhakodiya — home"
+          >
             <Image src={siteConfig.logo} alt="" width={36} height={36} className="h-9 w-9 rounded-xl" preload />
             <span className="font-display text-[19px] font-semibold tracking-[-0.04em]">
               prince<span className="text-violet-soft">.</span>dev
             </span>
-          </button>
+          </Link>
 
           <nav
             className={cn(
@@ -71,15 +96,16 @@ export function Nav() {
             )}
           >
             {links.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => go(link.id)}
+              <Link
+                key={keyOf(link)}
+                href={hrefOf(link)}
+                onClick={(e) => go(e, link)}
                 className={cn(
                   "relative rounded-full px-5 py-2 text-[15px] transition-colors",
-                  active === link.id ? "text-foreground" : "text-muted hover:text-foreground"
+                  active === keyOf(link) ? "text-foreground" : "text-muted hover:text-foreground"
                 )}
               >
-                {active === link.id && (
+                {active === keyOf(link) && (
                   <motion.span
                     layoutId="nav-active"
                     className="absolute inset-0 rounded-full bg-white/[0.08]"
@@ -87,7 +113,7 @@ export function Nav() {
                   />
                 )}
                 <span className="relative">{link.label}</span>
-              </button>
+              </Link>
             ))}
           </nav>
 
@@ -132,17 +158,18 @@ export function Nav() {
               className="flex h-full flex-col justify-center gap-1 px-6"
             >
               {links.map((link, i) => (
-                <motion.button
-                  key={link.id}
+                <motion.a
+                  key={keyOf(link)}
+                  href={hrefOf(link)}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.05 * i }}
-                  onClick={() => go(link.id)}
+                  onClick={(e) => go(e, link)}
                   className="display flex items-baseline gap-4 py-2 text-left text-5xl"
                 >
                   <span className="font-mono text-xs tracking-normal text-subtle">0{i + 1}</span>
                   {link.label}
-                </motion.button>
+                </motion.a>
               ))}
             </motion.nav>
           </motion.div>
