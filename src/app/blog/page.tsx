@@ -46,7 +46,9 @@ export default function BlogPage() {
       />
       <Breadcrumbs items={crumbs} />
       <p className="eyebrow">Blog · {posts.length} posts</p>
-      <h1 className="display mt-5 text-6xl sm:text-8xl">Notes from the workbench.</h1>
+      <h1 className="display mt-5 text-6xl sm:text-8xl">
+        Blog <span className="serif-accent tracking-normal">case studies & notes.</span>
+      </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{description}</p>
 
       {groups.map((g) => (

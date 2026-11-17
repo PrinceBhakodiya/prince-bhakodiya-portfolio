@@ -5,7 +5,7 @@ import { ProjectCard, ContactCta } from "@/components/content";
 import { JsonLd } from "@/components/json-ld";
 import { absoluteUrl, breadcrumbSchema, pageMetadata, PERSON_ID } from "@/lib/seo";
 
-const description = `Apps and platforms built and shipped by ${siteConfig.name}, a full stack and Flutter developer in Ahmedabad: ride-hailing, fintech, quick commerce, PropTech, marketplaces and CRM.`;
+const description = `10 apps and platforms shipped by ${siteConfig.name}, Flutter & full stack developer in Ahmedabad: ride-hailing, fintech, quick commerce and CRM.`;
 
 export const metadata = pageMetadata({
   title: "Projects — Apps & Platforms I've Shipped",
@@ -44,7 +44,9 @@ export default function ProjectsPage() {
       />
       <Breadcrumbs items={crumbs} />
       <p className="eyebrow">Projects · {projects.length} shipped</p>
-      <h1 className="display mt-5 text-6xl sm:text-8xl">Things I&apos;ve shipped.</h1>
+      <h1 className="display mt-5 text-6xl sm:text-8xl">
+        Projects <span className="serif-accent tracking-normal">I&apos;ve shipped.</span>
+      </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{description}</p>
       <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => (

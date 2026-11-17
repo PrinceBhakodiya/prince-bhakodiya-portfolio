@@ -277,3 +277,16 @@ html.lite .dock-glass {
 html.lite .animate-ping {
   animation: none;
 }
+
+/*
+ * The hero intro is the page's largest text block. Its fade-in waited for the name
+ * animation, so the browser counted the page as loaded ~5s late (Largest Contentful
+ * Paint). It is visible from the first frame; desktop keeps the slide-up, lite mode
+ * drops the motion too. Overrides framer-motion's inline styles.
+ */
+.lcp-now {
+  opacity: 1 !important;
+}
+html.lite .lcp-now {
+  transform: none !important;
+}

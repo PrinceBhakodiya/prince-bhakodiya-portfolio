@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
-import { getPost, posts, readingMinutes, plain } from "@/data/blog";
+import { getPost, posts, readingMinutes } from "@/data/blog";
 import { projects } from "@/data/projects";
 import { siteConfig } from "@/data/site";
 import { PageShell, Breadcrumbs } from "@/components/page-shell";
@@ -54,6 +54,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           breadcrumbSchema(crumbs),
           {
             "@type": "BlogPosting",
+            "@id": absoluteUrl(`${url}#article`),
             headline: post.title,
             description: post.description,
             abstract: post.tldr,
@@ -61,13 +62,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             mainEntityOfPage: absoluteUrl(url),
             datePublished: post.date,
             dateModified: post.updated ?? post.date,
-            author: { "@id": PERSON_ID, name: siteConfig.name, url: absoluteUrl("/about/") },
+            author: { "@id": PERSON_ID },
             publisher: { "@id": PERSON_ID },
             isPartOf: { "@id": WEBSITE_ID },
-            image: absoluteUrl(project?.icon ?? siteConfig.logo),
+            // The generated 1200x630 share card for this post
+            image: { "@type": "ImageObject", url: absoluteUrl(`${url}opengraph-image`), width: 1200, height: 630 },
             keywords: post.tags.join(", "),
-            articleBody: post.body.map((b) => ("text" in b ? plain(b.text) : b.items.map(plain).join(" "))).join("\n\n"),
-            ...(project ? { about: { "@type": "SoftwareApplication", name: project.title, url: absoluteUrl(`/projects/${project.id}/`) } } : {}),
+            ...(project ? { about: { "@id": absoluteUrl(`/projects/${project.id}/#app`) } } : {}),
           },
           ...(post.faqs?.length ? [faqSchema(post.faqs)] : []),
         ]}
@@ -84,7 +85,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         <h1 className="display mt-6 text-5xl !leading-[0.95] sm:text-7xl">{post.title}</h1>
         <div className="mt-8 flex items-center gap-3 text-sm text-muted">
           <span className="relative h-10 w-10 overflow-hidden rounded-full ring-1 ring-white/15">
-            <Image src={siteConfig.logo} alt="" fill sizes="40px" className="object-cover" />
+            <Image src={siteConfig.logoSmall} alt="" fill sizes="40px" className="object-cover" />
           </span>
           <span>
             By{" "}

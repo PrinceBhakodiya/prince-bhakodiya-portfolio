@@ -2,14 +2,17 @@ export const siteConfig = {
   name: "Prince Bhakodiya",
   title: "Prince Bhakodiya — Flutter & Full Stack Developer in Ahmedabad, India",
   description:
-    "Prince Bhakodiya is a Full Stack Developer and Tech Lead in Ahmedabad, India, building Flutter apps, Node.js and Next.js backends and real-time platforms used by 100K+ people.",
+    "Prince Bhakodiya is a Flutter & Full Stack Developer and Tech Lead in Ahmedabad, India. His apps have 100K+ installs on Google Play.",
   url: "https://princebhakodiya.in",
   logo: "/logo.png",
+  /** 160px copy for the small avatar spots (the 1024px PNG is 128KB) */
+  logoSmall: "/logo-160.webp",
   favicon: "/favicon.ico",
   ogImage: "/og-image.png",
   contact: {
     whatsapp: "https://wa.me/919974204663",
     whatsappDisplay: "+91 99742 04663",
+    phone: "+919974204663",
     email: "mailto:bhakodiyaprince05@gmail.com",
     emailAddress: "bhakodiyaprince05@gmail.com",
   },
@@ -24,7 +27,7 @@ export const siteConfig = {
   address: { city: "Ahmedabad", region: "Gujarat", country: "India", countryCode: "IN" },
   jobTitle: "Full Stack Developer & Tech Lead",
   /** Short, factual bio used by search engines and AI answer engines */
-  bio: "Prince Bhakodiya is a Full Stack Developer and Tech Lead based in Ahmedabad, Gujarat, India. He builds Flutter mobile apps, Node.js and Next.js backends and real-time platforms, and has shipped ride-hailing, fintech, quick-commerce, PropTech and CRM products used by 100K+ people.",
+  bio: "Prince Bhakodiya is a Full Stack Developer and Tech Lead based in Ahmedabad, Gujarat, India. He builds Flutter mobile apps, Node.js and Next.js backends and real-time platforms, and has shipped 10 ride-hailing, fintech, quick-commerce, PropTech and CRM products. Two of his apps, Vayu and Clozzet, each have 50K+ installs on Google Play.",
   knowsAbout: [
     "Flutter",
     "Dart",
@@ -46,9 +49,9 @@ export const siteConfig = {
   timeZone: "Asia/Kolkata",
   stats: [
     { value: "5+", label: "Years" },
-    { value: "100K+", label: "Users" },
-    { value: "15+", label: "Projects" },
-    { value: "7", label: "Apps shipped" },
+    { value: "100K+", label: "Play Store installs" },
+    { value: "10", label: "Products shipped" },
+    { value: "7", label: "Apps on Google Play" },
   ],
   currently: [
     "Leading engineering as Tech Lead",

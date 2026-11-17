@@ -95,7 +95,7 @@ export function Nav() {
             className="flex items-center gap-2.5"
             aria-label="Prince Bhakodiya — home"
           >
-            <Image src={siteConfig.logo} alt="" width={36} height={36} className="h-9 w-9 rounded-xl" preload />
+            <Image src={siteConfig.logoSmall} alt="" width={36} height={36} className="h-9 w-9 rounded-xl" preload />
             <span className="font-display text-[19px] font-semibold tracking-[-0.04em]">
               prince<span className="text-violet-soft">.</span>dev
             </span>

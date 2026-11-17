@@ -62,7 +62,6 @@ export const metadata: Metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
   },
-  alternates: { canonical: "/" },
   category: "technology",
   icons: {
     icon: [
@@ -72,17 +71,6 @@ export const metadata: Metadata = {
     ],
     shortcut: [siteConfig.favicon],
     apple: [{ url: siteConfig.logo, type: "image/png", sizes: "512x512" }],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
   },
 };
 

@@ -7,11 +7,12 @@ import { hirePages } from "@/data/hire";
 import { PageShell, Breadcrumbs } from "@/components/page-shell";
 import { ContactCta, Faqs, Tldr } from "@/components/content";
 import { JsonLd } from "@/components/json-ld";
-import { absoluteUrl, breadcrumbSchema, faqSchema, pageMetadata, personSchema } from "@/lib/seo";
+import { absoluteUrl, breadcrumbSchema, faqSchema, pageMetadata, PERSON_ID } from "@/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "About Prince Bhakodiya — Full Stack Developer & Tech Lead, Ahmedabad",
-  description: siteConfig.bio,
+  title: "About Prince Bhakodiya — Flutter & Full Stack Developer",
+  description:
+    "Prince Bhakodiya is a Flutter & Full Stack Developer and Tech Lead in Ahmedabad, India. Experience, skills and the 10 products he has shipped.",
   path: "/about/",
   type: "profile",
   keywords: ["Prince Bhakodiya", "who is Prince Bhakodiya", "Prince Bhakodiya developer", "Prince Bhakodiya Ahmedabad"],
@@ -50,9 +51,13 @@ export default function AboutPage() {
           breadcrumbSchema(crumbs),
           {
             "@type": "ProfilePage",
+            "@id": absoluteUrl("/about/#profile"),
             url: absoluteUrl("/about/"),
             name: `About ${siteConfig.name}`,
-            mainEntity: personSchema(),
+            dateCreated: "2026-11-16",
+            dateModified: "2026-11-17",
+            // The full Person is in the site-wide graph; reference it instead of repeating it
+            mainEntity: { "@id": PERSON_ID },
           },
           faqSchema(faqs),
         ]}
@@ -60,7 +65,7 @@ export default function AboutPage() {
       <Breadcrumbs items={crumbs} />
       <div className="flex items-center gap-5">
         <span className="relative h-20 w-20 overflow-hidden rounded-3xl ring-1 ring-white/15">
-          <Image src={siteConfig.logo} alt={siteConfig.name} fill sizes="80px" className="object-cover" preload />
+          <Image src={siteConfig.logoSmall} alt={siteConfig.name} fill sizes="80px" className="object-cover" preload />
         </span>
         <div>
           <p className="eyebrow">About</p>
@@ -78,7 +83,7 @@ export default function AboutPage() {
           ["Based in", "Ahmedabad, Gujarat, India"],
           ["Role", siteConfig.jobTitle],
           ["Experience", "5+ years, intern to Tech Lead"],
-          ["Shipped", `${projects.length} products, 100K+ users`],
+          ["Shipped", `${projects.length} products, 100K+ Play Store installs`],
         ].map(([k, v]) => (
           <div key={k}>
             <dt className="eyebrow !text-[0.66rem]">{k}</dt>

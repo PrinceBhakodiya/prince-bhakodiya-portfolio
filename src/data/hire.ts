@@ -24,11 +24,12 @@ export const hirePages: HirePage[] = [
   {
     slug: "flutter-developer-ahmedabad",
     title: "Flutter Developer in Ahmedabad",
-    metaTitle: "Flutter Developer in Ahmedabad — Android & iOS Apps",
+    metaTitle: "Freelance Flutter Developer in Ahmedabad | Prince Bhakodiya",
     description:
-      "Prince Bhakodiya is a Flutter developer in Ahmedabad, Gujarat who builds and ships Android and iOS apps with their backends: ride-hailing, fintech, quick commerce and CRM apps live on the stores.",
+      "Freelance Flutter developer in Ahmedabad. I build Android and iOS apps with their Node.js backends: ride-hailing, fintech, quick commerce and CRM.",
     keywords: [
       "flutter developer ahmedabad",
+      "freelance flutter developer ahmedabad",
       "flutter app developer in ahmedabad",
       "hire flutter developer ahmedabad",
       "flutter developer gujarat",
@@ -38,7 +39,7 @@ export const hirePages: HirePage[] = [
     area: "Ahmedabad",
     intro: [
       "I am Prince Bhakodiya, a Flutter developer based in Ahmedabad. I build Android and iOS apps from one Flutter codebase and the Node.js backends they run on, then ship them to the Play Store and App Store.",
-      "My Flutter apps include two ride-hailing platforms, a crypto trading app, an IPO tracker, a 30-minute fashion delivery app, corporate food delivery, a home-dining marketplace and a sales CRM. You can install every one of them today.",
+      "My Flutter apps include two ride-hailing platforms, a crypto trading app, an IPO tracker, a 30-minute fashion delivery app, corporate food delivery, a sales CRM and the website for a home-dining marketplace. Seven of them are live on Google Play today.",
     ],
     offer: [
       "Android and iOS apps from one Flutter codebase",
@@ -71,7 +72,7 @@ export const hirePages: HirePage[] = [
   {
     slug: "full-stack-developer-ahmedabad",
     title: "Full Stack Developer in Ahmedabad",
-    metaTitle: "Full Stack Developer in Ahmedabad — Web, Mobile & Backend",
+    metaTitle: "Full Stack Developer in Ahmedabad | Prince Bhakodiya",
     description:
       "Full stack developer in Ahmedabad building complete products: Flutter apps, Next.js and React web apps, Node.js APIs and databases, from first screen to deployment.",
     keywords: [
@@ -114,7 +115,7 @@ export const hirePages: HirePage[] = [
   {
     slug: "mobile-app-developer-ahmedabad",
     title: "Mobile App Developer in Ahmedabad",
-    metaTitle: "App Developer in Ahmedabad — Android & iOS App Development",
+    metaTitle: "Android & iOS App Developer, Ahmedabad | Prince Bhakodiya",
     description:
       "Mobile app developer in Ahmedabad building Android and iOS apps for startups and businesses: ride-hailing, delivery, fintech, marketplaces and CRM, live on the stores.",
     keywords: [
@@ -157,7 +158,7 @@ export const hirePages: HirePage[] = [
   {
     slug: "flutter-developer-india",
     title: "Flutter Developer in India",
-    metaTitle: "Hire a Flutter Developer in India — Remote Flutter App Development",
+    metaTitle: "Hire a Remote Flutter Developer in India | Prince Bhakodiya",
     description:
       "Hire an experienced Flutter developer in India for remote app development: production Android and iOS apps with Node.js backends, real-time features and payments.",
     keywords: [
@@ -170,7 +171,7 @@ export const hirePages: HirePage[] = [
     service: "Flutter app development",
     area: "India",
     intro: [
-      "I work with startups and companies across India, and abroad, as a remote Flutter developer. You get someone who has shipped production apps used by over 100,000 people and can own the backend as well.",
+      "I work with startups and companies across India, and abroad, as a remote Flutter developer. You get someone who has shipped production apps with 100K+ installs on Google Play and can own the backend as well.",
       "Remote work runs on clear communication: written updates, test builds you can install, and a shared view of what ships next.",
     ],
     offer: [
@@ -189,20 +190,20 @@ export const hirePages: HirePage[] = [
       },
       {
         q: "How experienced are you with Flutter?",
-        a: "I have built and shipped Flutter apps for over five years, including ride-hailing, fintech, quick commerce and CRM apps used by more than 100,000 people.",
+        a: "I have built and shipped Flutter apps since 2022, including ride-hailing, fintech, quick commerce and CRM apps. Vayu and Clozzet each have 50K+ installs on Google Play.",
       },
     ],
   },
   {
     slug: "nodejs-developer-india",
     title: "Node.js Backend Developer in India",
-    metaTitle: "Node.js Backend Developer in India — APIs, Real-time & Scale",
+    metaTitle: "Node.js Backend Developer in India | Prince Bhakodiya",
     description:
       "Node.js backend developer in India building REST APIs, Socket.IO real-time systems, payments and integrations on MongoDB, PostgreSQL and Redis.",
     keywords: [
       "node.js developer india",
       "nodejs backend developer",
-      "hire node js developer ahmedabad",
+      "hire node js developer india",
       "socket.io developer",
       "backend developer india",
     ],
@@ -235,13 +236,13 @@ export const hirePages: HirePage[] = [
   {
     slug: "nextjs-developer-india",
     title: "Next.js Developer in India",
-    metaTitle: "Next.js Developer in India — Fast, SEO-friendly Websites & Apps",
+    metaTitle: "Next.js Developer in India | Prince Bhakodiya",
     description:
       "Next.js developer in India building fast, search-friendly websites and web apps: server-rendered pages, dashboards, SaaS products and SEO built in.",
     keywords: [
       "next.js developer india",
-      "nextjs developer ahmedabad",
-      "react developer ahmedabad",
+      "hire next.js developer india",
+      "react developer india",
       "seo friendly website developer",
       "saas developer india",
     ],
@@ -274,7 +275,7 @@ export const hirePages: HirePage[] = [
   {
     slug: "freelance-app-developer-gujarat",
     title: "Freelance App Developer in Gujarat",
-    metaTitle: "Freelance App Developer in Gujarat — Ahmedabad, Surat, Vadodara, Rajkot",
+    metaTitle: "Freelance App Developer in Gujarat | Prince Bhakodiya",
     description:
       "Freelance app and software developer in Gujarat, based in Ahmedabad, working with businesses in Surat, Vadodara, Rajkot and Gandhinagar on apps, websites and backends.",
     keywords: [

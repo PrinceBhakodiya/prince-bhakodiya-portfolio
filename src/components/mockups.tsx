@@ -435,8 +435,8 @@ export function SupprPhoneScreen() {
 /* ───────────────────────── Safari-style browser in a MacBook ───────────────────────── */
 
 function Screenshot({ src, alt }: { src: string; alt: string }) {
-  // Eager: tabs swap instantly and cards don't flash blank while the stack scrolls in
-  return <Image src={src} alt={alt} fill loading="eager" sizes="(min-width: 1024px) 680px, 90vw" className="object-cover object-top" />;
+  // Lazy (default): loads as the card nears the screen instead of competing with the hero
+  return <Image src={src} alt={alt} fill sizes="(min-width: 1024px) 680px, 90vw" className="object-cover object-top" />;
 }
 
 export const webApps = {
@@ -445,14 +445,14 @@ export const webApps = {
     url: "app.antoc.ai/dashboard",
     href: "https://app.antoc.ai",
     icon: "/projects/antoc-icon.png",
-    Screen: () => <Screenshot src="/projects/antoc-web.jpg" alt="Antoc CRM dashboard" />,
+    Screen: () => <Screenshot src="/projects/antoc-web.webp" alt="Antoc CRM dashboard" />,
   },
   ipobuzz: {
     title: "IPO Buzz — Live IPOs & GMP",
     url: "ipobuzz.in",
     href: "https://ipobuzz.in",
-    icon: "/projects/ipobuzz-icon.png",
-    Screen: () => <Screenshot src="/projects/ipobuzz-web.jpg" alt="IPO Buzz website home page" />,
+    icon: "/projects/ipobuzz-icon.webp",
+    Screen: () => <Screenshot src="/projects/ipobuzz-web.webp" alt="IPO Buzz website home page" />,
   },
   suppr: {
     title: "Suppr — Home dining",
@@ -466,7 +466,7 @@ export const webApps = {
     url: "brokersite.in",
     href: "https://brokersite.in",
     icon: "/projects/brokersite-icon.png",
-    Screen: () => <Screenshot src="/projects/brokersite-web.jpg" alt="BrokerSite home page" />,
+    Screen: () => <Screenshot src="/projects/brokersite-web.webp" alt="BrokerSite home page" />,
   },
 } as const;
 

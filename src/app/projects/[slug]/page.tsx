@@ -17,14 +17,29 @@ export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.id }));
 }
 
+/** Trims to whole words so meta descriptions stay under the length search results show. */
+const clip = (text: string, max: number) =>
+  text.length <= max ? text : text.slice(0, text.lastIndexOf(" ", max - 1)).replace(/[,;:—-]\s*$/, "") + "…";
+
+/** schema.org applicationCategory values Google recognises */
+const APP_CATEGORY: Record<string, string> = {
+  Mobility: "TravelApplication",
+  FinTech: "FinanceApplication",
+  "E-commerce": "ShoppingApplication",
+  "Food Tech": "LifestyleApplication",
+  Marketplace: "LifestyleApplication",
+  PropTech: "BusinessApplication",
+  SaaS: "BusinessApplication",
+};
+
 const find = (slug: string) => projects.find((p) => p.id === slug);
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const p = find(slug)!;
   return pageMetadata({
-    title: `${p.title} — ${p.subtitle ?? p.category} | Case study`,
-    description: `${p.description} Built by ${siteConfig.name} with ${p.tech.join(", ")}.`,
+    title: `${p.title} — ${p.subtitle ?? p.category}`,
+    description: clip(`${p.title}: ${p.description}`, 158),
     path: `/projects/${p.id}/`,
     keywords: [p.title, `${p.title} app`, p.category, ...p.tech, siteConfig.name],
   });
@@ -61,7 +76,9 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
             description: p.description,
             url: absoluteUrl(`/projects/${p.id}/`),
             image: absoluteUrl(p.icon),
-            applicationCategory: p.category,
+            "@id": absoluteUrl(`/projects/${p.id}/#app`),
+            applicationCategory: APP_CATEGORY[p.category] ?? "BusinessApplication",
+            genre: p.category,
             operatingSystem: isWeb ? "Web" : "Android, iOS",
             creator: { "@id": PERSON_ID },
             sameAs: links.map((l) => l.href),

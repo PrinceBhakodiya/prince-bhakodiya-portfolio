@@ -17,6 +17,15 @@ export function personSchema() {
     jobTitle: siteConfig.jobTitle,
     description: siteConfig.bio,
     email: siteConfig.contact.emailAddress,
+    telephone: siteConfig.contact.phone,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "sales",
+      telephone: siteConfig.contact.phone,
+      email: siteConfig.contact.emailAddress,
+      areaServed: "IN",
+      availableLanguage: ["en", "hi", "gu"],
+    },
     address: {
       "@type": "PostalAddress",
       addressLocality: siteConfig.address.city,
@@ -63,6 +72,13 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
   };
 }
 
+/** Indexable, with large image previews allowed. Set per page so the 404 page never inherits it. */
+export const indexable: Metadata["robots"] = {
+  index: true,
+  follow: true,
+  googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+};
+
 /** Page metadata with canonical URL and matching Open Graph / Twitter tags. */
 export function pageMetadata({
   title,
@@ -81,11 +97,16 @@ export function pageMetadata({
   modifiedTime?: string;
   keywords?: string[];
 }): Metadata {
+  // The layout appends " | Prince Bhakodiya". Skip it when the title already names
+  // the brand or would run past ~70 characters and get cut off in search results.
+  const withBrand = `${title} | ${siteConfig.name}`;
+  const skipBrand = title.includes(siteConfig.name) || withBrand.length > 70;
   return {
-    title,
+    title: skipBrand ? { absolute: title } : title,
     description,
     keywords,
     alternates: { canonical: path },
+    robots: indexable,
     openGraph: {
       type,
       url: path,

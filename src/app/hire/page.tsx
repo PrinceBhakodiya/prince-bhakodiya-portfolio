@@ -22,7 +22,9 @@ export default function HireIndex() {
       <JsonLd data={breadcrumbSchema(crumbs)} />
       <Breadcrumbs items={crumbs} />
       <p className="eyebrow">Hire me</p>
-      <h1 className="display mt-5 text-6xl sm:text-8xl">Let&apos;s build together.</h1>
+      <h1 className="display mt-5 text-5xl sm:text-7xl">
+        Hire a Flutter & full stack developer <span className="serif-accent tracking-normal">in Ahmedabad.</span>
+      </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">{description}</p>
       <div className="mt-14 grid gap-4 sm:grid-cols-2">
         {hirePages.map((h) => (

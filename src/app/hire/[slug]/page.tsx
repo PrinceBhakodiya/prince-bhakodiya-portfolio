@@ -56,6 +56,7 @@ export default async function HirePage({ params }: { params: Promise<{ slug: str
           breadcrumbSchema(crumbs),
           {
             "@type": "Service",
+            "@id": absoluteUrl(`${url}#service`),
             name: `${h.service} — ${h.area}`,
             serviceType: h.service,
             description: h.description,

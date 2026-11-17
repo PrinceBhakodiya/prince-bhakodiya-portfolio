@@ -13,5 +13,5 @@ export function generateStaticParams() {
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const p = hirePages.find((x) => x.slug === slug)!;
-  return ogCard({ eyebrow: "Hire · " + p.area, title: p.title, subtitle: "Prince Bhakodiya — apps used by 100K+ people" });
+  return ogCard({ eyebrow: "Hire · " + p.area, title: p.title, subtitle: "Prince Bhakodiya — apps with 100K+ installs" });
 }

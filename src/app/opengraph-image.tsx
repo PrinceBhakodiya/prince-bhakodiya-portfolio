@@ -10,6 +10,6 @@ export default function Image() {
   return ogCard({
     eyebrow: "Ahmedabad · India",
     title: siteConfig.name,
-    subtitle: "Flutter & Full Stack Developer, Tech Lead. Apps used by 100K+ people.",
+    subtitle: "Flutter & Full Stack Developer, Tech Lead. Apps with 100K+ installs.",
   });
 }

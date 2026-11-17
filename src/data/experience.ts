@@ -20,7 +20,7 @@ export const experiences: ExperienceItem[] = [
     title: "Senior Full Stack Developer",
     company: "Startup",
     description:
-      "Owned end-to-end delivery for high-traffic apps and backends — real-time ride platforms, enterprise CRM, crypto analytics, and food-tech products serving thousands of users.",
+      "Owned end-to-end delivery for high-traffic apps and backends — real-time ride platforms, enterprise CRM, crypto analytics, and food-tech products, including apps with 50K+ installs each.",
     tags: ["Senior", "Full Stack", "Scale"],
   },
   {

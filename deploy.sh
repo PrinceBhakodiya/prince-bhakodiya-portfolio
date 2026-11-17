@@ -21,8 +21,9 @@ TARBALL="$(mktemp -t portfolio).tgz"
 COPYFILE_DISABLE=1 tar --no-xattrs -czf "$TARBALL" -C out .
 
 echo "Uploading..."
-gcloud compute scp "$TARBALL" "$INSTANCE:/tmp/portfolio.tgz" \
+gcloud compute scp "$TARBALL" deploy/nginx/seo.conf deploy/nginx/security-headers.inc "$INSTANCE:/tmp/" \
   --zone "$ZONE" --project "$PROJECT" --quiet
+gcloud compute ssh "$INSTANCE" --zone "$ZONE" --project "$PROJECT" --quiet --command "mv /tmp/$(basename "$TARBALL") /tmp/portfolio.tgz"
 rm -f "$TARBALL"
 
 # find(1) filter that skips everything in KEEP (the VM has no rsync)
@@ -42,9 +43,34 @@ gcloud compute ssh "$INSTANCE" --zone "$ZONE" --project "$PROJECT" --quiet --com
   sudo cp -a /tmp/portfolio-out/. $WEB_ROOT/
   cd /tmp/portfolio-out && for f in * .[!.]*; do [ -e \"\$f\" ] && sudo chown -R www:www \"$WEB_ROOT/\$f\"; done; cd /
   rm -rf /tmp/portfolio-out /tmp/portfolio.tgz
+  # nginx rules from deploy/nginx/: security headers, caching, noindex for old apps.
+  # Installed only when changed; restored from the old copy if nginx rejects them.
+  EXT=/www/server/panel/vhost/nginx/extension/princebhakodiya.in
+  NGINX=/www/server/nginx/sbin/nginx
+  NGINX_CONF=/www/server/nginx/conf/nginx.conf
+  CHANGED=0
+  for f in security-headers.inc seo.conf; do
+    if ! sudo cmp -s /tmp/\$f \$EXT/\$f; then
+      [ -f \$EXT/\$f ] && sudo cp \$EXT/\$f /tmp/\$f.prev
+      sudo cp /tmp/\$f \$EXT/\$f
+      CHANGED=1
+    fi
+  done
+  if [ \$CHANGED = 1 ]; then
+    if sudo \$NGINX -t -c \$NGINX_CONF; then
+      sudo \$NGINX -s reload -c \$NGINX_CONF && echo 'nginx rules updated'
+    else
+      echo 'nginx rejected the new rules; restoring the previous ones' >&2
+      for f in security-headers.inc seo.conf; do
+        if [ -f /tmp/\$f.prev ]; then sudo cp /tmp/\$f.prev \$EXT/\$f; else sudo rm -f \$EXT/\$f; fi
+      done
+      exit 1
+    fi
+  fi
+  sudo rm -f /tmp/seo.conf /tmp/security-headers.inc /tmp/security-headers.inc.prev /tmp/seo.conf.prev
   # Next.js exports share images as extensionless 'opengraph-image' files; serve them as PNG
   OG_CONF=/www/server/panel/vhost/nginx/extension/princebhakodiya.in/og-images.conf
-  if [ ! -f \$OG_CONF ]; then
+  if ! sudo test -f \$OG_CONF; then
     echo 'location ~ /opengraph-image\$ { default_type image/png; expires 7d; }' | sudo tee \$OG_CONF >/dev/null
     sudo /www/server/nginx/sbin/nginx -t -c /www/server/nginx/conf/nginx.conf && sudo /www/server/nginx/sbin/nginx -s reload -c /www/server/nginx/conf/nginx.conf
   fi

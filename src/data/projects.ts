@@ -170,7 +170,7 @@ export const projects: Project[] = [
   },
   {
     id: "ipohub",
-    icon: "/projects/ipobuzz-icon.png",
+    icon: "/projects/ipobuzz-icon.webp",
     tagline: "Never miss an IPO.",
     kind: "Android & iOS",
     color: "#6d4cff",
@@ -194,7 +194,7 @@ export const projects: Project[] = [
     tech: ["Flutter", "Node.js", "MongoDB", "FastAPI"],
     gradient: "from-blue-600/30 via-indigo-600/20 to-blue-800/30",
     accent: "blue",
-    image: "/projects/ipobuzz-icon.png",
+    image: "/projects/ipobuzz-icon.webp",
     imageAlt: "IPO Buzz app icon — IPO calendar, GMP and subscription",
     imageFit: "contain",
     links: {
@@ -205,7 +205,7 @@ export const projects: Project[] = [
   },
   {
     id: "ipobuzz-web",
-    icon: "/projects/ipobuzz-icon.png",
+    icon: "/projects/ipobuzz-icon.webp",
     tagline: "Every IPO, live on the web.",
     kind: "Web platform",
     color: "#5b45e6",

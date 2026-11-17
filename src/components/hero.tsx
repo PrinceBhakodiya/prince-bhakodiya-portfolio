@@ -173,7 +173,7 @@ function Currently() {
   );
 }
 
-export function Hero() {
+export function Hero({ hasPortrait }: { hasPortrait: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const nameY = useTransform(scrollYProgress, [0, 1], [0, 160]);
@@ -211,7 +211,7 @@ export function Hero() {
             className="glass group flex items-center gap-3 rounded-full p-1.5 pr-1.5 text-left"
           >
             <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full ring-2 ring-violet/60">
-              <Image src={siteConfig.logo} alt="" fill sizes="44px" className="object-cover" />
+              <Image src={siteConfig.logoSmall} alt="" fill sizes="44px" className="object-cover" />
               <span className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full bg-[#28c840] ring-2 ring-background" />
             </span>
             <span className="pr-2">
@@ -238,7 +238,8 @@ export function Hero() {
 
         {/* Name, centred, with the portrait standing between the words */}
         <div className="relative mt-12 sm:mt-10">
-          {/* Portrait: drop a transparent cut-out at /public/prince.png and it appears here */}
+          {/* Portrait: drop a transparent cut-out at /public/prince.png and it appears here (page.tsx checks at build) */}
+          {hasPortrait && (
           <motion.div
             style={{ y: photoY }}
             className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex justify-center"
@@ -254,12 +255,13 @@ export function Hero() {
               <img
                 ref={portraitRef}
                 src="/prince.png"
-                alt=""
+                alt="Prince Bhakodiya, Flutter developer in Ahmedabad"
                 className={`absolute inset-0 h-full w-full object-contain object-bottom transition-opacity duration-700 [mask-image:linear-gradient(to_bottom,black_75%,transparent)] ${portrait ? "opacity-100" : "opacity-0"}`}
                 onLoad={() => setPortrait(true)}
               />
             </motion.div>
           </motion.div>
+          )}
           {!portrait && (
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(139,92,246,0.35),rgba(139,92,246,0.12)_55%,transparent)] sm:h-[34rem] sm:w-[48rem]" />
           )}
@@ -309,11 +311,11 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: LAST_LANDING - 0.2, ease }}
-            className="max-w-3xl text-xl leading-[1.55] text-muted sm:text-2xl lg:text-[27px]"
+            className="lcp-now max-w-3xl text-xl leading-[1.55] text-muted sm:text-2xl lg:text-[27px]"
           >
             Full Stack Developer and <span className="text-foreground">Tech Lead</span>. I design, build and ship
             products for <span className="serif-accent text-[1.15em]">Android, iOS and the web</span> — ride-hailing,
-            fintech, quick-commerce and CRM platforms used by <span className="text-foreground">100K+ people</span>,
+            fintech, quick-commerce and CRM platforms with <span className="text-foreground">100K+ installs</span>,
             from the first screen to the last API.
           </motion.p>
 
